@@ -228,6 +228,25 @@ ul.rows { list-style: none; padding: 0; }
 .flags dt { font: 500 0.72rem var(--font-mono); }
 .fulltab { margin-top: 3rem; }
 .topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.topactions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.btn { display: inline-block; font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
+  background: none; border-radius: 6px; padding: 0.35rem 0.7rem; color: var(--color-ink);
+  text-decoration: none; white-space: nowrap; }
+.btn:hover { background: var(--color-paper-2); }
+.btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.btn.primary { font-size: 0.82rem; padding: 0.5rem 0.9rem; border-color: var(--color-muted); }
+.docs { max-width: 100%; }
+.docs .note, .docs .actions, .docs .docsrepo { max-width: 760px; }
+.embedpanel { padding: 0; background: none; border: 0; }
+.embedpanel > h3.sub { margin-bottom: 0.5rem; }
+.embedpanel iframe { display: block; width: 100%; height: 80vh; min-height: 520px;
+  border: 1px solid var(--color-rule); border-radius: 8px; background: var(--color-paper); }
+.embed body { padding: 1rem 1.25rem; min-height: 0; }
+.embed .topbar, .embed .frame > .lede { display: none; }
+.embed .frame { max-width: none; }
+.docs a:not(.btn) { color: var(--color-ink); }
+.docs .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0 0.5rem; }
+.docsrepo { grid-template-columns: minmax(180px, 14rem) 1fr; max-width: 640px; }
 .themebtn { display: none; font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
   background: none; border-radius: 6px; padding: 0.35rem 0.7rem; color: var(--color-ink);
   cursor: pointer; white-space: nowrap; }
@@ -242,6 +261,7 @@ ul.rows { list-style: none; padding: 0; }
 JS = """
 (function () {
   document.documentElement.classList.add('js');
+  if (/[?&]embed\\b/.test(location.search)) document.documentElement.classList.add('embed');
   var tb = document.getElementById('themebtn');
   if (tb) {
     var root = document.documentElement;
@@ -258,9 +278,18 @@ JS = """
       var next = cur() === 'dark' ? 'light' : 'dark';
       root.setAttribute('data-theme', next);
       try { localStorage.setItem('linutil-map-theme', next); } catch (e) {}
-      paint();
+      paint(); syncFrame();
     });
     paint();
+    var fs = document.getElementById('fsframe');
+    function syncFrame() {
+      if (!fs) return;
+      try {
+        var d = fs.contentDocument;
+        if (d && d.documentElement) d.documentElement.setAttribute('data-theme', cur());
+      } catch (e) {}
+    }
+    if (fs) fs.addEventListener('load', syncFrame);
   }
   var tabs =[].slice.call(document.querySelectorAll('.tab'));
   var panels = [].slice.call(document.querySelectorAll('.panel'));
@@ -282,6 +311,7 @@ JS = """
       });
     });
     var h = location.hash.replace('#', ''), start = 0;
+    tabs.forEach(function (t, i) { if (t.hasAttribute('data-default')) start = i; });
     tabs.forEach(function (t, i) { if (t.id === 'tab-' + h) start = i; });
     show(start, false);
   }
@@ -373,6 +403,39 @@ EARLY = ("<script>try{var t=localStorage.getItem('linutil-map-theme');"
          "if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}"
          "catch(e){}</script>")
 THEME_BTN = '<button type="button" class="themebtn" id="themebtn" aria-pressed="false">Dark mode</button>'
+GH_URL = 'https://github.com/bojanstrkovski-21/map-util'
+TOP_ACTIONS = (f'<div class="topactions"><a class="btn" href="{GH_URL}" target="_blank" '
+               f'rel="noopener">GitHub</a>{THEME_BTN}</div>')
+
+
+DEFAULT_TAB = 'about'
+
+
+def about_html():
+    about = f"""<p class="note">This is the Linutil menu map, published with GitHub Pages from the
+<a href="{GH_URL}" target="_blank" rel="noopener">map-util</a> repository. The repository is also the
+development environment: it holds the generator scripts that build these pages from Linutil's
+<code>core/tabs/*/tab_data.toml</code>, and the diagram-design skill used for the diagrams.</p>
+<p class="actions"><a class="btn primary" href="{GH_URL}" target="_blank" rel="noopener">View on GitHub</a></p>
+<h3 class="sub">In the repository</h3>
+<dl class="flags docsrepo">
+<dt>linutil-menu-map/</dt><dd>These pages, plus a text outline of every entry</dd>
+<dt>linutil-menu-map-generator/</dt><dd>The Python scripts that regenerate them</dd>
+<dt>.claude/, .agents/</dt><dd>The installed diagram-design skill</dd>
+</dl>"""
+    full = ('<iframe id="fsframe" title="Linutil full structure" loading="lazy" '
+            'src="linutil-full-structure.html?embed=1"></iframe>')
+    items = [('About', about), ('Full structure', full)]
+    btns, panels = [], []
+    for i, (label, inner) in enumerate(items, 1):
+        sel = 'true' if i == 1 else 'false'
+        btns.append(f'<button type="button" class="subtab" role="tab" id="st-about{i}" aria-controls="sp-about{i}" '
+                    f'aria-selected="{sel}" tabindex="{0 if i == 1 else -1}">{esc(label)}</button>')
+        cls = 'subpanel embedpanel' if label == 'Full structure' else 'subpanel'
+        panels.append(f'<div class="{cls}" role="tabpanel" id="sp-about{i}" aria-labelledby="st-about{i}">'
+                      f'<h3 class="sub">{esc(label)}</h3>{inner}</div>')
+    return (f'<section class="docs"><div class="subgroup"><div class="subtabs" role="tablist">{"".join(btns)}</div>'
+            f'{"".join(panels)}</div></section>')
 
 
 def head(title, css, js=False):
@@ -392,6 +455,8 @@ def head(title, css, js=False):
 
 
 def body_order(svg, extra, extra_first):
+    if svg is None:
+        return extra
     diagram = f'<div class="diagram-container">\n{svg}\n</div>'
     if extra_first:
         return f'{extra}\n<h2 class="diagramh">Diagram</h2>\n{diagram}'
@@ -413,16 +478,18 @@ def standalone(title, h1, lede, svg, extra='', extra_first=False):
 def wrapper(panels, recs):
     buttons, secs = [], []
     for i, (slug, label, count, lede, svg, extra, first) in enumerate(panels):
-        sel = 'true' if i == 0 else 'false'
+        is_def = slug == DEFAULT_TAB
+        sel = 'true' if is_def else 'false'
         n = f'<span class="n">{count}</span>' if count else ''
         buttons.append(f'<button class="tab" role="tab" id="tab-{slug}" aria-controls="panel-{slug}" '
-                       f'aria-selected="{sel}" tabindex="{0 if i == 0 else -1}">{esc(label)}{n}</button>')
+                       f'aria-selected="{sel}" tabindex="{0 if is_def else -1}"'
+                       f'{" data-default" if is_def else ""}>{esc(label)}{n}</button>')
         secs.append(f'<section class="panel" role="tabpanel" id="panel-{slug}" aria-labelledby="tab-{slug}">\n'
                     f'<p class="lede">{esc(lede)}</p>\n{body_order(svg, extra, first)}\n</section>')
     return (head('Linutil menu map', mm.CSS_BASE + mm.CSS_TABS + CSS_TREE, True) + f"""
     <div class="topbar"><div>
     <p class="eyebrow">Menu map · Tree</p>
-    <h1>Linutil menu map</h1></div>{THEME_BTN}</div>
+    <h1>Linutil menu map</h1></div>{TOP_ACTIONS}</div>
     <p class="lede">Every top-level tab of the Linutil menu, with its submenus and direct actions. Generated from core/tabs/*/tab_data.toml.</p>
     {SEARCH}
     <div class="tabs" role="tablist" aria-label="Linutil tabs">
@@ -442,7 +509,7 @@ def fullpage(tabs, trees, recs):
     parts = [head('Linutil full structure', mm.CSS_BASE + CSS_TREE, True), f"""
     <div class="topbar"><div>
     <p class="eyebrow">Menu map · Tree</p>
-    <h1>Linutil full structure</h1></div>{THEME_BTN}</div>
+    <h1>Linutil full structure</h1></div>{TOP_ACTIONS}</div>
     <p class="lede">All {total} entries across {len(tabs)} tabs, with script paths, task flags and restrictions. Generated from core/tabs/*/tab_data.toml.</p>
     {SEARCH}
     {howto()}"""]
@@ -474,6 +541,8 @@ def main():
         (mm.OUT / f'{slug}.html').write_text(
             standalone(f'{title} · Tree', f"Linutil menu · {t['name']}", l, svg, plain[t['dir']], True))
         panels.append((slug, t['name'], str(t['total']), l, svg, plain[t['dir']], True))
+    panels.append((DEFAULT_TAB, 'About', '', 'About this site and where it lives.', None,
+                   about_html(), False))
     (mm.OUT / 'index.html').write_text(wrapper(panels, recs2))
     (mm.OUT / 'linutil-full-structure.html').write_text(fullpage(tabs, trees, recs))
     print('entries indexed:', len(recs), len(recs2), 'expected', total)

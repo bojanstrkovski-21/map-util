@@ -119,6 +119,25 @@ ul.rows { list-style: none; padding: 0; }
 .flags dt { font: 500 0.72rem var(--font-mono); }
 .fulltab { margin-top: 3rem; }
 .topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.topactions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.btn { display: inline-block; font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
+  background: none; border-radius: 6px; padding: 0.35rem 0.7rem; color: var(--color-ink);
+  text-decoration: none; white-space: nowrap; }
+.btn:hover { background: var(--color-paper-2); }
+.btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.btn.primary { font-size: 0.82rem; padding: 0.5rem 0.9rem; border-color: var(--color-muted); }
+.docs { max-width: 100%; }
+.docs .note, .docs .actions, .docs .docsrepo { max-width: 760px; }
+.embedpanel { padding: 0; background: none; border: 0; }
+.embedpanel > h3.sub { margin-bottom: 0.5rem; }
+.embedpanel iframe { display: block; width: 100%; height: 80vh; min-height: 520px;
+  border: 1px solid var(--color-rule); border-radius: 8px; background: var(--color-paper); }
+.embed body { padding: 1rem 1.25rem; min-height: 0; }
+.embed .topbar, .embed .frame > .lede { display: none; }
+.embed .frame { max-width: none; }
+.docs a:not(.btn) { color: var(--color-ink); }
+.docs .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0 0.5rem; }
+.docsrepo { grid-template-columns: minmax(180px, 14rem) 1fr; max-width: 640px; }
 .themebtn { display: none; font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
   background: none; border-radius: 6px; padding: 0.35rem 0.7rem; color: var(--color-ink);
   cursor: pointer; white-space: nowrap; }
@@ -135,7 +154,7 @@ ul.rows { list-style: none; padding: 0; }
 
     <div class="topbar"><div>
     <p class="eyebrow">Menu map · Tree</p>
-    <h1>Linutil full structure</h1></div><button type="button" class="themebtn" id="themebtn" aria-pressed="false">Dark mode</button></div>
+    <h1>Linutil full structure</h1></div><div class="topactions"><a class="btn" href="https://github.com/bojanstrkovski-21/map-util" target="_blank" rel="noopener">GitHub</a><button type="button" class="themebtn" id="themebtn" aria-pressed="false">Dark mode</button></div></div>
     <p class="lede">All 186 entries across 5 tabs, with script paths, task flags and restrictions. Generated from core/tabs/*/tab_data.toml.</p>
     <div class="search">
 <label for="q">Find an entry</label>
@@ -192,6 +211,7 @@ ul.rows { list-style: none; padding: 0; }
   <script>
 (function () {
   document.documentElement.classList.add('js');
+  if (/[?&]embed\b/.test(location.search)) document.documentElement.classList.add('embed');
   var tb = document.getElementById('themebtn');
   if (tb) {
     var root = document.documentElement;
@@ -208,9 +228,18 @@ ul.rows { list-style: none; padding: 0; }
       var next = cur() === 'dark' ? 'light' : 'dark';
       root.setAttribute('data-theme', next);
       try { localStorage.setItem('linutil-map-theme', next); } catch (e) {}
-      paint();
+      paint(); syncFrame();
     });
     paint();
+    var fs = document.getElementById('fsframe');
+    function syncFrame() {
+      if (!fs) return;
+      try {
+        var d = fs.contentDocument;
+        if (d && d.documentElement) d.documentElement.setAttribute('data-theme', cur());
+      } catch (e) {}
+    }
+    if (fs) fs.addEventListener('load', syncFrame);
   }
   var tabs =[].slice.call(document.querySelectorAll('.tab'));
   var panels = [].slice.call(document.querySelectorAll('.panel'));
@@ -232,6 +261,7 @@ ul.rows { list-style: none; padding: 0; }
       });
     });
     var h = location.hash.replace('#', ''), start = 0;
+    tabs.forEach(function (t, i) { if (t.hasAttribute('data-default')) start = i; });
     tabs.forEach(function (t, i) { if (t.id === 'tab-' + h) start = i; });
     show(start, false);
   }
