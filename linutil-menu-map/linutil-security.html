@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linutil menu: Security · Tree</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --color-paper: #e6e5e0; --color-zone: #dddcd6; --color-paper-2: #dddcd6;
+  --color-node: #efeeea; --color-leaf: #e9e8e3;
+  --color-ink: #2d3142; --color-muted: #4f5d75; --color-soft: #566178; --color-accent: #a83a18;
+  --color-tint: rgba(168,58,24,0.10); --color-rule: rgba(45,49,66,0.16); --color-rail: rgba(45,49,66,0.40);
+  --color-chip-ink: rgba(45,49,66,0.40); --color-chip-accent: rgba(168,58,24,0.50);
+
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --color-paper: #1d283a; --color-zone: #141c2a; --color-paper-2: #141c2a;
+  --color-node: #28334a; --color-leaf: #222d42;
+  --color-ink: #c9e79a; --color-muted: #94a3b8; --color-soft: #94a3b8; --color-accent: #F78C6C;
+  --color-tint: rgba(247,140,108,0.14); --color-rule: rgba(148,163,184,0.22); --color-rail: rgba(148,163,184,0.50);
+  --color-chip-ink: rgba(201,231,154,0.40); --color-chip-accent: rgba(247,140,108,0.55);
+  color-scheme: dark; }
+}
+:root[data-theme="dark"] {
+  --color-paper: #1d283a; --color-zone: #141c2a; --color-paper-2: #141c2a;
+  --color-node: #28334a; --color-leaf: #222d42;
+  --color-ink: #c9e79a; --color-muted: #94a3b8; --color-soft: #94a3b8; --color-accent: #F78C6C;
+  --color-tint: rgba(247,140,108,0.14); --color-rule: rgba(148,163,184,0.22); --color-rail: rgba(148,163,184,0.50);
+  --color-chip-ink: rgba(201,231,154,0.40); --color-chip-accent: rgba(247,140,108,0.55);
+  color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }
+
+body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+  min-height: 100vh; padding: 3rem 2rem; }
+.frame { max-width: 1280px; width: 100%; margin: 0 auto; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+  font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink);
+  margin-bottom: 0.5rem; }
+.lede { font-size: 0.9rem; color: var(--color-muted); margin-bottom: 1.5rem; max-width: 64ch; }
+.diagram-container { width: 100%; overflow-x: auto; }
+svg { width: 100%; display: block; }
+@media print { .diagram-container { overflow-x: visible; } svg { min-width: 0 !important; } }
+
+.tree, .howto, .search { margin-top: 2.5rem; max-width: 1100px; }
+.tree h2, .howto h2, .diagramh { font: 400 1.4rem var(--font-serif); letter-spacing: -0.01em; margin-bottom: 0.25rem; }
+.tree { margin-top: 0; }
+.diagramh { margin: 2.5rem 0 0.75rem; }
+.note { font-size: 0.82rem; color: var(--color-muted); margin-bottom: 1rem; max-width: 72ch; }
+code { font-family: var(--font-mono); font-size: 0.74rem; }
+h3.sub { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--color-muted); margin: 1.5rem 0 0.5rem; }
+.toolbar { display: none; gap: 0.5rem; margin: 0.75rem 0 0.25rem; }
+.js .toolbar { display: flex; }
+.toolbar button { font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
+  background: none; border-radius: 6px; padding: 0.3rem 0.65rem; color: var(--color-ink); cursor: pointer; }
+.toolbar button:hover { background: var(--color-paper-2); }
+.subtabs { display: none; flex-wrap: wrap; gap: 0.25rem; border-bottom: 1px solid var(--color-rule); margin: 1rem 0 0.75rem; }
+.js .subtabs { display: flex; }
+.js .tree.all .subtabs { display: none; }
+.subtab { font: 500 0.8rem var(--font-sans); color: var(--color-muted); background: none; border: 0;
+  border-bottom: 2px solid transparent; padding: 0.5rem 0.8rem; cursor: pointer; margin-bottom: -1px; }
+.subtab .n { font-family: var(--font-mono); font-size: 0.66rem; color: var(--color-soft); margin-left: 0.4rem; }
+.subtab:hover { color: var(--color-ink); }
+.subtab[aria-selected="true"] { color: var(--color-ink); border-bottom-color: var(--color-ink); }
+.subtab:focus-visible, .toolbar button:focus-visible, .results button:focus-visible, #q:focus-visible {
+  outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.subpanel { background: var(--color-paper-2); border: 1px solid var(--color-rule); border-radius: 8px;
+  padding: 0.25rem 0.9rem 0.5rem; margin-bottom: 0.75rem; }
+.subpanel .subgroup .subpanel { background: var(--color-paper); margin: 0.5rem 0; }
+.subpanel > h3.sub { margin-top: 0.75rem; }
+.js .subpanel > h3.sub { display: none; }
+.js .tree.all .subpanel > h3.sub { display: block; }
+.js .subpanel[hidden] { display: none; }
+.js .tree.all .subpanel[hidden] { display: block; }
+.panelnotes { margin: 0.5rem 0 0.25rem; }
+ul.rows { list-style: none; padding: 0; }
+.nm { font-weight: 600; font-size: 0.88rem; }
+.row { display: grid; grid-template-columns: minmax(170px, 1.2fr) minmax(200px, 1.6fr) 2fr; gap: 0.75rem;
+  align-items: baseline; padding: 0.45rem 0.25rem; border-top: 1px solid var(--color-rule); }
+.row:first-child { border-top: 0; }
+.row.flash { outline: 2px solid var(--color-accent); outline-offset: 1px; background: var(--color-tint); }
+.row code.inline { color: var(--color-soft); font-style: italic; }
+.chip { display: inline-block; font: 500 0.65rem var(--font-mono); border: 1px solid var(--color-chip-ink);
+  border-radius: 4px; padding: 0.05rem 0.35rem; margin: 0 0.3rem 0.2rem 0; overflow-wrap: anywhere; }
+.row > *, .results button > * { min-width: 0; overflow-wrap: anywhere; }
+.chip.alt { border-style: dashed; color: var(--color-muted); }
+.search { display: none; }
+.js .search { display: block; position: relative; margin-top: 0; margin-bottom: 1.5rem; max-width: 720px; }
+.search label { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--color-muted); display: block; margin-bottom: 0.4rem; }
+#q { width: 100%; max-width: 560px; font: 400 0.9rem var(--font-sans); padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-rule); border-radius: 6px; background: var(--color-paper-2); color: var(--color-ink); }
+.count { position: absolute; top: 0; right: 0; margin: 0; font: 400 0.72rem var(--font-mono);
+  line-height: 1; color: var(--color-soft); }
+.results { list-style: none; position: absolute; left: 0; right: 0; top: 100%; z-index: 20;
+  max-height: 60vh; overflow-y: auto; background: var(--color-paper-2);
+  border: 1px solid var(--color-rule); border-radius: 8px; }
+.results:empty { display: none; }
+.results button { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.1rem; width: 100%;
+  text-align: left; font: inherit; color: inherit; background: none; border: 0;
+  border-top: 1px solid var(--color-rule); padding: 0.55rem 0.8rem; cursor: pointer; }
+.results li:first-child button { border-top: 0; }
+.results button:hover { background: var(--color-paper-2); }
+.crumb { font-size: 0.78rem; color: var(--color-muted); }
+.howto ol { margin: 0.75rem 0 1rem 1.25rem; font-size: 0.86rem; max-width: 80ch; }
+.howto li { margin-bottom: 0.45rem; line-height: 1.5; }
+.flags { display: grid; grid-template-columns: 3rem 1fr; gap: 0.2rem 0.75rem; font-size: 0.82rem; max-width: 520px; }
+.flags dt { font: 500 0.72rem var(--font-mono); }
+.fulltab { margin-top: 3rem; }
+.topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.themebtn { display: none; font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
+  background: none; border-radius: 6px; padding: 0.35rem 0.7rem; color: var(--color-ink);
+  cursor: pointer; white-space: nowrap; }
+.js .themebtn { display: inline-block; }
+.themebtn:hover, .themebtn[aria-pressed="true"] { background: var(--color-paper-2); }
+.themebtn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+@media (max-width: 720px) {
+  .row, .results button { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
+}
+</style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Menu map · Tree</p>
+    <h1>Linutil menu · Security</h1>
+    <p class="lede">4 entries: 4 direct actions.</p>
+<section class="tree" aria-label="Security full structure">
+<h2>Full structure</h2>
+<p class="note">Edit <code>core/tabs/security/tab_data.toml</code>. Scripts live under <code>core/tabs/security/</code>; paths below are relative to that folder. Chips are task flags (hover for the meaning) and restrictions.</p>
+<div class="toolbar"><button type="button" data-act="showall">Show all</button></div>
+<div class="subgroup"><div class="subtabs" role="tablist"><button type="button" class="subtab" role="tab" id="st-17" aria-controls="sp-17" aria-selected="true" tabindex="0">Direct actions<span class="n">4</span></button></div><div class="subpanel" role="tabpanel" id="sp-17" aria-labelledby="st-17"><h3 class="sub">Direct actions · 4</h3><ul class="rows"><li class="row" id="a-111"><span class="nm">FirewallD Firewall Baselines (CTT)</span><code>firewalld-baselines.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span><span class="chip alt" title="Entry is hidden unless this holds">requires: command_exists(firewall-cmd)</span></span></li><li class="row" id="a-112"><span class="nm">Lynis Security Audit</span><code>lynis-audit.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Package manager action">MP</span><span class="chip" title="Package removal">RP</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-113"><span class="nm">rkhunter Rootkit Scan</span><code>rkhunter-scan.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Package manager action">MP</span><span class="chip" title="Package removal">RP</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-114"><span class="nm">UFW Firewall Baselines (CTT)</span><code>ufw-baselines.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span><span class="chip alt" title="Entry is hidden unless this holds">requires: not command_exists(firewall-cmd)</span></span></li></ul></div></div>
+</section>
+<h2 class="diagramh">Diagram</h2>
+<div class="diagram-container">
+<svg viewBox="0 0 632 412" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="linutil-security-title linutil-security-desc" style="min-width:632px;max-width:632px">
+<title id="linutil-security-title">Linutil menu: Security</title>
+<desc id="linutil-security-desc">Tree of the Security tab in Linutil, 4 entries across 4 direct actions.</desc>
+<rect width="100%" height="100%" fill="var(--color-paper)"/>
+<rect x="272" y="40" width="320" height="284" rx="8" fill="var(--color-zone)" stroke="var(--color-rule)" stroke-width="1"/>
+<text x="288" y="60" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">DIRECT ACTIONS · 4</text>
+<path d="M 208 68 H 272" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<rect x="40" y="40" width="168" height="56" rx="6" fill="var(--color-paper)"/>
+<rect x="40" y="40" width="168" height="56" rx="6" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
+<rect x="48" y="48" width="28" height="12" rx="2" fill="transparent" stroke="var(--color-chip-accent)" stroke-width="0.8"/>
+<text x="62" y="57" fill="var(--color-accent)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TAB</text>
+<text x="124" y="80" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Security</text>
+<text x="124" y="92" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">4 entries</text>
+<rect x="288" y="80" width="288" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
+<text x="432" y="108" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">FirewallD Firewall Baselines (CTT)</text>
+<rect x="288" y="140" width="288" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
+<text x="432" y="168" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Lynis Security Audit</text>
+<rect x="288" y="200" width="288" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
+<text x="432" y="228" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">rkhunter Rootkit Scan</text>
+<rect x="288" y="260" width="288" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
+<text x="432" y="288" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">UFW Firewall Baselines (CTT)</text>
+<line x1="40" y1="352" x2="592" y2="352" stroke="var(--color-rule)" stroke-width="0.8"/>
+<text x="40" y="368" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">LEGEND</text>
+<rect x="40" y="380" width="14" height="10" rx="2" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
+<text x="60" y="388" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Tab</text>
+<rect x="103" y="380" width="14" height="10" rx="2" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
+<text x="123" y="388" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Direct action</text>
+</svg>
+</div>
+  </div>
+</body>
+</html>

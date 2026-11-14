@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linutil menu: Gaming · Tree</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --color-paper: #e6e5e0; --color-zone: #dddcd6; --color-paper-2: #dddcd6;
+  --color-node: #efeeea; --color-leaf: #e9e8e3;
+  --color-ink: #2d3142; --color-muted: #4f5d75; --color-soft: #566178; --color-accent: #a83a18;
+  --color-tint: rgba(168,58,24,0.10); --color-rule: rgba(45,49,66,0.16); --color-rail: rgba(45,49,66,0.40);
+  --color-chip-ink: rgba(45,49,66,0.40); --color-chip-accent: rgba(168,58,24,0.50);
+
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --color-paper: #1d283a; --color-zone: #141c2a; --color-paper-2: #141c2a;
+  --color-node: #28334a; --color-leaf: #222d42;
+  --color-ink: #c9e79a; --color-muted: #94a3b8; --color-soft: #94a3b8; --color-accent: #F78C6C;
+  --color-tint: rgba(247,140,108,0.14); --color-rule: rgba(148,163,184,0.22); --color-rail: rgba(148,163,184,0.50);
+  --color-chip-ink: rgba(201,231,154,0.40); --color-chip-accent: rgba(247,140,108,0.55);
+  color-scheme: dark; }
+}
+:root[data-theme="dark"] {
+  --color-paper: #1d283a; --color-zone: #141c2a; --color-paper-2: #141c2a;
+  --color-node: #28334a; --color-leaf: #222d42;
+  --color-ink: #c9e79a; --color-muted: #94a3b8; --color-soft: #94a3b8; --color-accent: #F78C6C;
+  --color-tint: rgba(247,140,108,0.14); --color-rule: rgba(148,163,184,0.22); --color-rail: rgba(148,163,184,0.50);
+  --color-chip-ink: rgba(201,231,154,0.40); --color-chip-accent: rgba(247,140,108,0.55);
+  color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }
+
+body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+  min-height: 100vh; padding: 3rem 2rem; }
+.frame { max-width: 1280px; width: 100%; margin: 0 auto; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+  font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink);
+  margin-bottom: 0.5rem; }
+.lede { font-size: 0.9rem; color: var(--color-muted); margin-bottom: 1.5rem; max-width: 64ch; }
+.diagram-container { width: 100%; overflow-x: auto; }
+svg { width: 100%; display: block; }
+@media print { .diagram-container { overflow-x: visible; } svg { min-width: 0 !important; } }
+
+.tree, .howto, .search { margin-top: 2.5rem; max-width: 1100px; }
+.tree h2, .howto h2, .diagramh { font: 400 1.4rem var(--font-serif); letter-spacing: -0.01em; margin-bottom: 0.25rem; }
+.tree { margin-top: 0; }
+.diagramh { margin: 2.5rem 0 0.75rem; }
+.note { font-size: 0.82rem; color: var(--color-muted); margin-bottom: 1rem; max-width: 72ch; }
+code { font-family: var(--font-mono); font-size: 0.74rem; }
+h3.sub { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--color-muted); margin: 1.5rem 0 0.5rem; }
+.toolbar { display: none; gap: 0.5rem; margin: 0.75rem 0 0.25rem; }
+.js .toolbar { display: flex; }
+.toolbar button { font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
+  background: none; border-radius: 6px; padding: 0.3rem 0.65rem; color: var(--color-ink); cursor: pointer; }
+.toolbar button:hover { background: var(--color-paper-2); }
+.subtabs { display: none; flex-wrap: wrap; gap: 0.25rem; border-bottom: 1px solid var(--color-rule); margin: 1rem 0 0.75rem; }
+.js .subtabs { display: flex; }
+.js .tree.all .subtabs { display: none; }
+.subtab { font: 500 0.8rem var(--font-sans); color: var(--color-muted); background: none; border: 0;
+  border-bottom: 2px solid transparent; padding: 0.5rem 0.8rem; cursor: pointer; margin-bottom: -1px; }
+.subtab .n { font-family: var(--font-mono); font-size: 0.66rem; color: var(--color-soft); margin-left: 0.4rem; }
+.subtab:hover { color: var(--color-ink); }
+.subtab[aria-selected="true"] { color: var(--color-ink); border-bottom-color: var(--color-ink); }
+.subtab:focus-visible, .toolbar button:focus-visible, .results button:focus-visible, #q:focus-visible {
+  outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.subpanel { background: var(--color-paper-2); border: 1px solid var(--color-rule); border-radius: 8px;
+  padding: 0.25rem 0.9rem 0.5rem; margin-bottom: 0.75rem; }
+.subpanel .subgroup .subpanel { background: var(--color-paper); margin: 0.5rem 0; }
+.subpanel > h3.sub { margin-top: 0.75rem; }
+.js .subpanel > h3.sub { display: none; }
+.js .tree.all .subpanel > h3.sub { display: block; }
+.js .subpanel[hidden] { display: none; }
+.js .tree.all .subpanel[hidden] { display: block; }
+.panelnotes { margin: 0.5rem 0 0.25rem; }
+ul.rows { list-style: none; padding: 0; }
+.nm { font-weight: 600; font-size: 0.88rem; }
+.row { display: grid; grid-template-columns: minmax(170px, 1.2fr) minmax(200px, 1.6fr) 2fr; gap: 0.75rem;
+  align-items: baseline; padding: 0.45rem 0.25rem; border-top: 1px solid var(--color-rule); }
+.row:first-child { border-top: 0; }
+.row.flash { outline: 2px solid var(--color-accent); outline-offset: 1px; background: var(--color-tint); }
+.row code.inline { color: var(--color-soft); font-style: italic; }
+.chip { display: inline-block; font: 500 0.65rem var(--font-mono); border: 1px solid var(--color-chip-ink);
+  border-radius: 4px; padding: 0.05rem 0.35rem; margin: 0 0.3rem 0.2rem 0; overflow-wrap: anywhere; }
+.row > *, .results button > * { min-width: 0; overflow-wrap: anywhere; }
+.chip.alt { border-style: dashed; color: var(--color-muted); }
+.search { display: none; }
+.js .search { display: block; position: relative; margin-top: 0; margin-bottom: 1.5rem; max-width: 720px; }
+.search label { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--color-muted); display: block; margin-bottom: 0.4rem; }
+#q { width: 100%; max-width: 560px; font: 400 0.9rem var(--font-sans); padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-rule); border-radius: 6px; background: var(--color-paper-2); color: var(--color-ink); }
+.count { position: absolute; top: 0; right: 0; margin: 0; font: 400 0.72rem var(--font-mono);
+  line-height: 1; color: var(--color-soft); }
+.results { list-style: none; position: absolute; left: 0; right: 0; top: 100%; z-index: 20;
+  max-height: 60vh; overflow-y: auto; background: var(--color-paper-2);
+  border: 1px solid var(--color-rule); border-radius: 8px; }
+.results:empty { display: none; }
+.results button { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.1rem; width: 100%;
+  text-align: left; font: inherit; color: inherit; background: none; border: 0;
+  border-top: 1px solid var(--color-rule); padding: 0.55rem 0.8rem; cursor: pointer; }
+.results li:first-child button { border-top: 0; }
+.results button:hover { background: var(--color-paper-2); }
+.crumb { font-size: 0.78rem; color: var(--color-muted); }
+.howto ol { margin: 0.75rem 0 1rem 1.25rem; font-size: 0.86rem; max-width: 80ch; }
+.howto li { margin-bottom: 0.45rem; line-height: 1.5; }
+.flags { display: grid; grid-template-columns: 3rem 1fr; gap: 0.2rem 0.75rem; font-size: 0.82rem; max-width: 520px; }
+.flags dt { font: 500 0.72rem var(--font-mono); }
+.fulltab { margin-top: 3rem; }
+.topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.themebtn { display: none; font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
+  background: none; border-radius: 6px; padding: 0.35rem 0.7rem; color: var(--color-ink);
+  cursor: pointer; white-space: nowrap; }
+.js .themebtn { display: inline-block; }
+.themebtn:hover, .themebtn[aria-pressed="true"] { background: var(--color-paper-2); }
+.themebtn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+@media (max-width: 720px) {
+  .row, .results button { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
+}
+</style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Menu map · Tree</p>
+    <h1>Linutil menu · Gaming</h1>
+    <p class="lede">36 entries: 3 submenus (31 actions) and 5 direct actions.</p>
+<section class="tree" aria-label="Gaming full structure">
+<h2>Full structure</h2>
+<p class="note">Edit <code>core/tabs/gaming/tab_data.toml</code>. Scripts live under <code>core/tabs/gaming/</code>; paths below are relative to that folder. Chips are task flags (hover for the meaning) and restrictions.</p>
+<div class="toolbar"><button type="button" data-act="showall">Show all</button></div>
+<div class="subgroup"><div class="subtabs" role="tablist"><button type="button" class="subtab" role="tab" id="st-13" aria-controls="sp-13" aria-selected="true" tabindex="0">Direct actions<span class="n">5</span></button><button type="button" class="subtab" role="tab" id="st-14" aria-controls="sp-14" aria-selected="false" tabindex="-1">Emulators<span class="n">18</span></button><button type="button" class="subtab" role="tab" id="st-15" aria-controls="sp-15" aria-selected="false" tabindex="-1">Game Launchers<span class="n">4</span></button><button type="button" class="subtab" role="tab" id="st-16" aria-controls="sp-16" aria-selected="false" tabindex="-1">Tools and Setups<span class="n">9</span></button></div><div class="subpanel" role="tabpanel" id="sp-13" aria-labelledby="st-13"><h3 class="sub">Direct actions · 5</h3><ul class="rows"><li class="row" id="a-75"><span class="nm">Arc Raiders Titus Mods</span><code>arc-raiders-mod.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-76"><span class="nm">Diablo II Resurrected Loot Filter</span><code>diablo2-titus-mod.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-77"><span class="nm">EverQuest Legends MIDI Fix</span><code>eq-legends-midi.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Package manager action">MP</span><span class="chip" title="File modification">FM</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span><span class="chip alt" title="Entry is hidden unless this holds">requires: command_exists(curl, flock, lutris, mkfifo, pgrep, ps, python3, sha256sum, stat); not command_exists(apk)</span></span></li><li class="row" id="a-78"><span class="nm">Fallout 76 INI and Mods</span><code>fallout76-titus-mod.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-79"><span class="nm">Starfield Titus INI and Mods</span><code>starfield-titus-mod.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-14" aria-labelledby="st-14"><h3 class="sub">Emulators · 18</h3><div class="subgroup"><div class="subtabs" role="tablist"><button type="button" class="subtab" role="tab" id="st-8" aria-controls="sp-8" aria-selected="true" tabindex="0">Multi-System Emulators<span class="n">2</span></button><button type="button" class="subtab" role="tab" id="st-9" aria-controls="sp-9" aria-selected="false" tabindex="-1">Nintendo Emulators<span class="n">8</span></button><button type="button" class="subtab" role="tab" id="st-10" aria-controls="sp-10" aria-selected="false" tabindex="-1">PlayStation Emulators<span class="n">3</span></button><button type="button" class="subtab" role="tab" id="st-11" aria-controls="sp-11" aria-selected="false" tabindex="-1">Sega Emulators<span class="n">3</span></button><button type="button" class="subtab" role="tab" id="st-12" aria-controls="sp-12" aria-selected="false" tabindex="-1">Xbox Emulators<span class="n">2</span></button></div><div class="subpanel" role="tabpanel" id="sp-8" aria-labelledby="st-8"><h3 class="sub">Multi-System Emulators · 2</h3><ul class="rows"><li class="row" id="a-80"><span class="nm">RetroArch Game Emulator</span><code>emulators/retroarch.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-81"><span class="nm">RetroArch Cores</span><code>emulators/retroarch-cores.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-9" aria-labelledby="st-9"><h3 class="sub">Nintendo Emulators · 8</h3><ul class="rows"><li class="row" id="a-82"><span class="nm">bsnes</span><code>emulators/nintendo/bsnes.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-83"><span class="nm">Dolphin Emulator</span><code>emulators/nintendo/dolphin-emu.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-84"><span class="nm">Gopher 64</span><code>emulators/nintendo/gopher64.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-85"><span class="nm">MelonDS</span><code>emulators/nintendo/melonds.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-86"><span class="nm">mGBA</span><code>emulators/nintendo/mgba.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-87"><span class="nm">Mupen 64 Plus</span><code>emulators/nintendo/mupen64plus.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-88"><span class="nm">Ryujinx</span><code>emulators/nintendo/ryujinx.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-89"><span class="nm">snes9x</span><code>emulators/nintendo/snes9x.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-10" aria-labelledby="st-10"><h3 class="sub">PlayStation Emulators · 3</h3><ul class="rows"><li class="row" id="a-90"><span class="nm">PCSX2</span><code>emulators/playstation/pcsx2.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-91"><span class="nm">Play!</span><code>emulators/playstation/play-emu.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-92"><span class="nm">RPCS3</span><code>emulators/playstation/rpcs3.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-11" aria-labelledby="st-11"><h3 class="sub">Sega Emulators · 3</h3><ul class="rows"><li class="row" id="a-93"><span class="nm">Blastem</span><code>emulators/sega/blastem.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-94"><span class="nm">Flycast</span><code>emulators/sega/flycast.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-95"><span class="nm">Kronos</span><code>emulators/sega/kronos.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-12" aria-labelledby="st-12"><h3 class="sub">Xbox Emulators · 2</h3><ul class="rows"><li class="row" id="a-96"><span class="nm">XEMU</span><code>emulators/xbox/xemu.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-97"><span class="nm">Xenia</span><code>emulators/xbox/xenia.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li></ul></div></div></div><div class="subpanel" role="tabpanel" id="sp-15" aria-labelledby="st-15"><h3 class="sub">Game Launchers · 4</h3><ul class="rows"><li class="row" id="a-98"><span class="nm">Heroic</span><code>heroic-launcher.sh</code><span class="chips"><span class="chip" title="Flatpak installation">FI</span></span></li><li class="row" id="a-99"><span class="nm">Lutris</span><code>lutris-launcher.sh</code><span class="chips"><span class="chip" title="Flatpak installation">FI</span></span></li><li class="row" id="a-100"><span class="nm">RetroArch</span><code>retroarch-launcher.sh</code><span class="chips"><span class="chip" title="Flatpak installation">FI</span></span></li><li class="row" id="a-101"><span class="nm">Steam</span><code>steam-launcher.sh</code><span class="chips"><span class="chip" title="Flatpak installation">FI</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-16" aria-labelledby="st-16"><h3 class="sub">Tools and Setups · 9</h3><ul class="rows"><li class="row" id="a-102"><span class="nm">Auto CPU Frequency</span><code>../applications-setup/auto-cpufreq.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span></span></li><li class="row" id="a-103"><span class="nm">Auto Mount Drive</span><code>../utils/auto-mount.sh</code><span class="chips"><span class="chip" title="Privileged: File modification">PFM</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-104"><span class="nm">Bottles</span><code>../applications-setup/bottles-setup.sh</code><span class="chips"><span class="chip" title="Flatpak installation">FI</span></span></li><li class="row" id="a-105"><span class="nm">Gaming Dependencies</span><code>../system-setup/gaming-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-106"><span class="nm">General GPU Drivers</span><code>../system-setup/gpu-driver.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-107"><span class="nm">Nvidia Drivers &amp; Hardware Acceleration</span><code>../system-setup/arch/nvidia-drivers.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-108"><span class="nm">ProtonPlus</span><code>protonplus.sh</code><span class="chips"><span class="chip" title="Flatpak installation">FI</span></span></li><li class="row" id="a-109"><span class="nm">ProtonUp-Qt</span><code>protonup-qt.sh</code><span class="chips"><span class="chip" title="Flatpak installation">FI</span></span></li><li class="row" id="a-110"><span class="nm">Waydroid</span><code>../applications-setup/waydroid-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span><span class="chip alt" title="Entry is hidden unless this holds">requires: environment XDG_SESSION_TYPE in (wayland, Wayland)</span></span></li></ul></div></div>
+</section>
+<h2 class="diagramh">Diagram</h2>
+<div class="diagram-container">
+<svg viewBox="0 0 908 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="linutil-gaming-title linutil-gaming-desc" style="min-width:908px;max-width:908px">
+<title id="linutil-gaming-title">Linutil menu: Gaming</title>
+<desc id="linutil-gaming-desc">Tree of the Gaming tab in Linutil, 36 entries across 3 submenus and 5 direct actions.</desc>
+<rect width="100%" height="100%" fill="var(--color-paper)"/>
+<rect x="272" y="40" width="312" height="224" rx="8" fill="var(--color-zone)" stroke="var(--color-rule)" stroke-width="1"/>
+<text x="288" y="60" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">SUBMENUS · 3</text>
+<rect x="640" y="40" width="228" height="344" rx="8" fill="var(--color-zone)" stroke="var(--color-rule)" stroke-width="1"/>
+<text x="656" y="60" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">EMULATORS · 5 SUBMENUS</text>
+<rect x="272" y="288" width="312" height="344" rx="8" fill="var(--color-zone)" stroke="var(--color-rule)" stroke-width="1"/>
+<text x="288" y="308" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">DIRECT ACTIONS · 5</text>
+<path d="M 208 192 H 240" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 240 192 V 76 Q 240 68 248 68 H 272" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 240 192 V 308 Q 240 316 248 316 H 272" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 568 104 H 640" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<rect x="40" y="164" width="168" height="56" rx="6" fill="var(--color-paper)"/>
+<rect x="40" y="164" width="168" height="56" rx="6" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
+<rect x="48" y="172" width="28" height="12" rx="2" fill="transparent" stroke="var(--color-chip-accent)" stroke-width="0.8"/>
+<text x="62" y="181" fill="var(--color-accent)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TAB</text>
+<text x="124" y="204" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Gaming</text>
+<text x="124" y="216" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">36 entries</text>
+<rect x="288" y="80" width="280" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="88" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="97" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="428" y="112" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Emulators</text>
+<text x="428" y="124" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">18 actions · 5 submenus</text>
+<rect x="656" y="80" width="196" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="664" y="88" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="682" y="97" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="754" y="112" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Multi-System Emulators</text>
+<text x="754" y="124" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">2 actions</text>
+<rect x="656" y="140" width="196" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="664" y="148" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="682" y="157" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="754" y="172" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Nintendo Emulators</text>
+<text x="754" y="184" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">8 actions</text>
+<rect x="656" y="200" width="196" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="664" y="208" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="682" y="217" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="754" y="232" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">PlayStation Emulators</text>
+<text x="754" y="244" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">3 actions</text>
+<rect x="656" y="260" width="196" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="664" y="268" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="682" y="277" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="754" y="292" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Sega Emulators</text>
+<text x="754" y="304" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">3 actions</text>
+<rect x="656" y="320" width="196" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="664" y="328" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="682" y="337" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="754" y="352" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Xbox Emulators</text>
+<text x="754" y="364" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">2 actions</text>
+<rect x="288" y="140" width="280" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="148" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="157" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="428" y="172" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Game Launchers</text>
+<text x="428" y="184" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">4 actions</text>
+<rect x="288" y="200" width="280" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="208" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="217" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="428" y="232" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Tools and Setups</text>
+<text x="428" y="244" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">9 actions</text>
+<rect x="288" y="328" width="280" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
+<text x="428" y="356" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Arc Raiders Titus Mods</text>
+<rect x="288" y="388" width="280" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
+<text x="428" y="416" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Diablo II Resurrected Loot Filter</text>
+<rect x="288" y="448" width="280" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
+<text x="428" y="476" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">EverQuest Legends MIDI Fix</text>
+<rect x="288" y="508" width="280" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
+<text x="428" y="536" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Fallout 76 INI and Mods</text>
+<rect x="288" y="568" width="280" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
+<text x="428" y="596" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Starfield Titus INI and Mods</text>
+<line x1="40" y1="660" x2="868" y2="660" stroke="var(--color-rule)" stroke-width="0.8"/>
+<text x="40" y="676" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">LEGEND</text>
+<rect x="40" y="688" width="14" height="10" rx="2" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
+<text x="60" y="696" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Tab</text>
+<rect x="103" y="688" width="14" height="10" rx="2" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<text x="123" y="696" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Submenu</text>
+<rect x="187" y="688" width="14" height="10" rx="2" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
+<text x="207" y="696" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Direct action</text>
+</svg>
+</div>
+  </div>
+</body>
+</html>

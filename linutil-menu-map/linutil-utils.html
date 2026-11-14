@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linutil menu: Utilities · Tree</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --color-paper: #e6e5e0; --color-zone: #dddcd6; --color-paper-2: #dddcd6;
+  --color-node: #efeeea; --color-leaf: #e9e8e3;
+  --color-ink: #2d3142; --color-muted: #4f5d75; --color-soft: #566178; --color-accent: #a83a18;
+  --color-tint: rgba(168,58,24,0.10); --color-rule: rgba(45,49,66,0.16); --color-rail: rgba(45,49,66,0.40);
+  --color-chip-ink: rgba(45,49,66,0.40); --color-chip-accent: rgba(168,58,24,0.50);
+
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --color-paper: #1d283a; --color-zone: #141c2a; --color-paper-2: #141c2a;
+  --color-node: #28334a; --color-leaf: #222d42;
+  --color-ink: #c9e79a; --color-muted: #94a3b8; --color-soft: #94a3b8; --color-accent: #F78C6C;
+  --color-tint: rgba(247,140,108,0.14); --color-rule: rgba(148,163,184,0.22); --color-rail: rgba(148,163,184,0.50);
+  --color-chip-ink: rgba(201,231,154,0.40); --color-chip-accent: rgba(247,140,108,0.55);
+  color-scheme: dark; }
+}
+:root[data-theme="dark"] {
+  --color-paper: #1d283a; --color-zone: #141c2a; --color-paper-2: #141c2a;
+  --color-node: #28334a; --color-leaf: #222d42;
+  --color-ink: #c9e79a; --color-muted: #94a3b8; --color-soft: #94a3b8; --color-accent: #F78C6C;
+  --color-tint: rgba(247,140,108,0.14); --color-rule: rgba(148,163,184,0.22); --color-rail: rgba(148,163,184,0.50);
+  --color-chip-ink: rgba(201,231,154,0.40); --color-chip-accent: rgba(247,140,108,0.55);
+  color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }
+
+body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+  min-height: 100vh; padding: 3rem 2rem; }
+.frame { max-width: 1280px; width: 100%; margin: 0 auto; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+  font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink);
+  margin-bottom: 0.5rem; }
+.lede { font-size: 0.9rem; color: var(--color-muted); margin-bottom: 1.5rem; max-width: 64ch; }
+.diagram-container { width: 100%; overflow-x: auto; }
+svg { width: 100%; display: block; }
+@media print { .diagram-container { overflow-x: visible; } svg { min-width: 0 !important; } }
+
+.tree, .howto, .search { margin-top: 2.5rem; max-width: 1100px; }
+.tree h2, .howto h2, .diagramh { font: 400 1.4rem var(--font-serif); letter-spacing: -0.01em; margin-bottom: 0.25rem; }
+.tree { margin-top: 0; }
+.diagramh { margin: 2.5rem 0 0.75rem; }
+.note { font-size: 0.82rem; color: var(--color-muted); margin-bottom: 1rem; max-width: 72ch; }
+code { font-family: var(--font-mono); font-size: 0.74rem; }
+h3.sub { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--color-muted); margin: 1.5rem 0 0.5rem; }
+.toolbar { display: none; gap: 0.5rem; margin: 0.75rem 0 0.25rem; }
+.js .toolbar { display: flex; }
+.toolbar button { font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
+  background: none; border-radius: 6px; padding: 0.3rem 0.65rem; color: var(--color-ink); cursor: pointer; }
+.toolbar button:hover { background: var(--color-paper-2); }
+.subtabs { display: none; flex-wrap: wrap; gap: 0.25rem; border-bottom: 1px solid var(--color-rule); margin: 1rem 0 0.75rem; }
+.js .subtabs { display: flex; }
+.js .tree.all .subtabs { display: none; }
+.subtab { font: 500 0.8rem var(--font-sans); color: var(--color-muted); background: none; border: 0;
+  border-bottom: 2px solid transparent; padding: 0.5rem 0.8rem; cursor: pointer; margin-bottom: -1px; }
+.subtab .n { font-family: var(--font-mono); font-size: 0.66rem; color: var(--color-soft); margin-left: 0.4rem; }
+.subtab:hover { color: var(--color-ink); }
+.subtab[aria-selected="true"] { color: var(--color-ink); border-bottom-color: var(--color-ink); }
+.subtab:focus-visible, .toolbar button:focus-visible, .results button:focus-visible, #q:focus-visible {
+  outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.subpanel { background: var(--color-paper-2); border: 1px solid var(--color-rule); border-radius: 8px;
+  padding: 0.25rem 0.9rem 0.5rem; margin-bottom: 0.75rem; }
+.subpanel .subgroup .subpanel { background: var(--color-paper); margin: 0.5rem 0; }
+.subpanel > h3.sub { margin-top: 0.75rem; }
+.js .subpanel > h3.sub { display: none; }
+.js .tree.all .subpanel > h3.sub { display: block; }
+.js .subpanel[hidden] { display: none; }
+.js .tree.all .subpanel[hidden] { display: block; }
+.panelnotes { margin: 0.5rem 0 0.25rem; }
+ul.rows { list-style: none; padding: 0; }
+.nm { font-weight: 600; font-size: 0.88rem; }
+.row { display: grid; grid-template-columns: minmax(170px, 1.2fr) minmax(200px, 1.6fr) 2fr; gap: 0.75rem;
+  align-items: baseline; padding: 0.45rem 0.25rem; border-top: 1px solid var(--color-rule); }
+.row:first-child { border-top: 0; }
+.row.flash { outline: 2px solid var(--color-accent); outline-offset: 1px; background: var(--color-tint); }
+.row code.inline { color: var(--color-soft); font-style: italic; }
+.chip { display: inline-block; font: 500 0.65rem var(--font-mono); border: 1px solid var(--color-chip-ink);
+  border-radius: 4px; padding: 0.05rem 0.35rem; margin: 0 0.3rem 0.2rem 0; overflow-wrap: anywhere; }
+.row > *, .results button > * { min-width: 0; overflow-wrap: anywhere; }
+.chip.alt { border-style: dashed; color: var(--color-muted); }
+.search { display: none; }
+.js .search { display: block; position: relative; margin-top: 0; margin-bottom: 1.5rem; max-width: 720px; }
+.search label { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--color-muted); display: block; margin-bottom: 0.4rem; }
+#q { width: 100%; max-width: 560px; font: 400 0.9rem var(--font-sans); padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-rule); border-radius: 6px; background: var(--color-paper-2); color: var(--color-ink); }
+.count { position: absolute; top: 0; right: 0; margin: 0; font: 400 0.72rem var(--font-mono);
+  line-height: 1; color: var(--color-soft); }
+.results { list-style: none; position: absolute; left: 0; right: 0; top: 100%; z-index: 20;
+  max-height: 60vh; overflow-y: auto; background: var(--color-paper-2);
+  border: 1px solid var(--color-rule); border-radius: 8px; }
+.results:empty { display: none; }
+.results button { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.1rem; width: 100%;
+  text-align: left; font: inherit; color: inherit; background: none; border: 0;
+  border-top: 1px solid var(--color-rule); padding: 0.55rem 0.8rem; cursor: pointer; }
+.results li:first-child button { border-top: 0; }
+.results button:hover { background: var(--color-paper-2); }
+.crumb { font-size: 0.78rem; color: var(--color-muted); }
+.howto ol { margin: 0.75rem 0 1rem 1.25rem; font-size: 0.86rem; max-width: 80ch; }
+.howto li { margin-bottom: 0.45rem; line-height: 1.5; }
+.flags { display: grid; grid-template-columns: 3rem 1fr; gap: 0.2rem 0.75rem; font-size: 0.82rem; max-width: 520px; }
+.flags dt { font: 500 0.72rem var(--font-mono); }
+.fulltab { margin-top: 3rem; }
+.topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.themebtn { display: none; font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
+  background: none; border-radius: 6px; padding: 0.35rem 0.7rem; color: var(--color-ink);
+  cursor: pointer; white-space: nowrap; }
+.js .themebtn { display: inline-block; }
+.themebtn:hover, .themebtn[aria-pressed="true"] { background: var(--color-paper-2); }
+.themebtn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+@media (max-width: 720px) {
+  .row, .results button { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
+}
+</style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Menu map · Tree</p>
+    <h1>Linutil menu · Utilities</h1>
+    <p class="lede">35 entries: 3 submenus (20 actions) and 15 direct actions.</p>
+<section class="tree" aria-label="Utilities full structure">
+<h2>Full structure</h2>
+<p class="note">Edit <code>core/tabs/utils/tab_data.toml</code>. Scripts live under <code>core/tabs/utils/</code>; paths below are relative to that folder. Chips are task flags (hover for the meaning) and restrictions.</p>
+<div class="toolbar"><button type="button" data-act="showall">Show all</button></div>
+<div class="subgroup"><div class="subtabs" role="tablist"><button type="button" class="subtab" role="tab" id="st-25" aria-controls="sp-25" aria-selected="true" tabindex="0">Direct actions<span class="n">15</span></button><button type="button" class="subtab" role="tab" id="st-26" aria-controls="sp-26" aria-selected="false" tabindex="-1">Monitor Control<span class="n">12</span></button><button type="button" class="subtab" role="tab" id="st-27" aria-controls="sp-27" aria-selected="false" tabindex="-1">Printers<span class="n">3</span></button><button type="button" class="subtab" role="tab" id="st-28" aria-controls="sp-28" aria-selected="false" tabindex="-1">User Account Manager<span class="n">5</span></button></div><div class="subpanel" role="tabpanel" id="sp-25" aria-labelledby="st-25"><h3 class="sub">Direct actions · 15</h3><ul class="rows"><li class="row" id="a-152"><span class="nm">Auto Login</span><code>auto-login.sh</code><span class="chips"><span class="chip" title="DE">DE</span><span class="chip" title="setup">setup</span></span></li><li class="row" id="a-153"><span class="nm">Bluetooth Manager</span><code>bluetooth-control.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-154"><span class="nm">Bootable USB Creator</span><code>create-bootable-usb.sh</code><span class="chips"><span class="chip" title="Disk modification">D</span></span></li><li class="row" id="a-155"><span class="nm">Crypto tool</span><code>encrypt_decrypt_tool.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-156"><span class="nm">Locale Setup</span><code>locale-setup.sh</code><span class="chips"><span class="chip" title="File modification">FM</span><span class="chip alt" title="Entry is hidden unless this holds">requires: command_exists(locale-gen)</span></span></li><li class="row" id="a-157"><span class="nm">Numlock on Startup</span><code>numlock.sh</code><span class="chips"><span class="chip" title="Privileged: File modification">PFM</span><span class="chip" title="Service or systemd action">SS</span></span></li><li class="row" id="a-158"><span class="nm">Ollama</span><code>ollama.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span></span></li><li class="row" id="a-159"><span class="nm">Ramalama</span><code>ramalama.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span></span></li><li class="row" id="a-160"><span class="nm">Ramalama Model Manager</span><code>ramalama-models.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-161"><span class="nm">Service Manager</span><code>service-control.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Privileged: File modification">PFM</span><span class="chip" title="Service or systemd action">SS</span></span></li><li class="row" id="a-162"><span class="nm">SSH Commands</span><code>ssh.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="File modification">FM</span><span class="chip" title="Service or systemd action">SS</span></span></li><li class="row" id="a-163"><span class="nm">SSH Samba</span><code>samba-ssh-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span><span class="chip" title="Privileged: File modification">PFM</span></span></li><li class="row" id="a-164"><span class="nm">Timeshift Backup</span><code>timeshift.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip alt" title="Entry is hidden unless this holds">requires: not command_exists(dnf)</span></span></li><li class="row" id="a-165"><span class="nm">US Locale Setup</span><code>locale-us-setup.sh</code><span class="chips"><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-166"><span class="nm">WiFi Manager</span><code>wifi-control.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-26" aria-labelledby="st-26"><h3 class="sub">Monitor Control · 12</h3><p class="panelnotes"><span class="chip alt">no multi-select (applies to everything inside)</span><span class="chip alt">requires: environment XDG_SESSION_TYPE in (x11, X11, xorg, Xorg, tty); environment DISPLAY in (:0, :1, :2, :3, :4, :5, :6, :7, :8, :9)</span></p><ul class="rows"><li class="row" id="a-167"><span class="nm">Auto Detect Displays</span><code>monitor-control/auto_detect_displays.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-168"><span class="nm">Change Orientation</span><code>monitor-control/change_orientation.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-169"><span class="nm">Disable Monitor</span><code>monitor-control/disable_monitor.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-170"><span class="nm">Duplicate Displays</span><code>monitor-control/duplicate_displays.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-171"><span class="nm">Enable Monitor</span><code>monitor-control/enable_monitor.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-172"><span class="nm">Extend Displays</span><code>monitor-control/extend_displays.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-173"><span class="nm">Manage Arrangement</span><code>monitor-control/manage_arrangement.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-174"><span class="nm">Reset Scaling</span><code>monitor-control/reset_scaling.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-175"><span class="nm">Scale Monitors</span><code>monitor-control/scale_monitor.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-176"><span class="nm">Set Brightness</span><code>monitor-control/set_brightness.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-177"><span class="nm">Set Primary Monitor</span><code>monitor-control/set_primary_monitor.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-178"><span class="nm">Set Resolution</span><code>monitor-control/set_resolutions.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-27" aria-labelledby="st-27"><h3 class="sub">Printers · 3</h3><ul class="rows"><li class="row" id="a-179"><span class="nm">CUPS</span><code>printers/install-cups.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-180"><span class="nm">Epson printer drivers</span><code>printers/install-epson-printer-drivers.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-181"><span class="nm">HP printer drivers</span><code>printers/install-hp-printer-drivers.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-28" aria-labelledby="st-28"><h3 class="sub">User Account Manager · 5</h3><p class="panelnotes"><span class="chip alt">no multi-select (applies to everything inside)</span></p><ul class="rows"><li class="row" id="a-182"><span class="nm">Add User</span><code>user-account-manager/add_user.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-183"><span class="nm">Add User To Groups</span><code>user-account-manager/add_to_group.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-184"><span class="nm">Change Password</span><code>user-account-manager/change_password.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-185"><span class="nm">Delete User</span><code>user-account-manager/delete_user.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-186"><span class="nm">Remove User From Groups</span><code>user-account-manager/remove_from_group.sh</code><span class="chips"><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li></ul></div></div>
+</section>
+<h2 class="diagramh">Diagram</h2>
+<div class="diagram-container">
+<svg viewBox="0 0 528 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="linutil-utils-title linutil-utils-desc" style="min-width:528px;max-width:528px">
+<title id="linutil-utils-title">Linutil menu: Utilities</title>
+<desc id="linutil-utils-desc">Tree of the Utilities tab in Linutil, 35 entries across 3 submenus and 15 direct actions.</desc>
+<rect width="100%" height="100%" fill="var(--color-paper)"/>
+<rect x="272" y="40" width="216" height="224" rx="8" fill="var(--color-zone)" stroke="var(--color-rule)" stroke-width="1"/>
+<text x="288" y="60" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">SUBMENUS · 3</text>
+<rect x="272" y="288" width="216" height="104" rx="8" fill="var(--color-zone)" stroke="var(--color-rule)" stroke-width="1"/>
+<text x="288" y="308" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">DIRECT ACTIONS · 15</text>
+<path d="M 208 192 H 240" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 240 192 V 76 Q 240 68 248 68 H 272" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 240 192 V 308 Q 240 316 248 316 H 272" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<rect x="40" y="164" width="168" height="56" rx="6" fill="var(--color-paper)"/>
+<rect x="40" y="164" width="168" height="56" rx="6" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
+<rect x="48" y="172" width="28" height="12" rx="2" fill="transparent" stroke="var(--color-chip-accent)" stroke-width="0.8"/>
+<text x="62" y="181" fill="var(--color-accent)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TAB</text>
+<text x="124" y="204" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Utilities</text>
+<text x="124" y="216" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">35 entries</text>
+<rect x="288" y="80" width="184" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="88" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="97" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="380" y="112" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Monitor Control</text>
+<text x="380" y="124" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">12 actions</text>
+<rect x="288" y="140" width="184" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="148" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="157" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="380" y="172" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Printers</text>
+<text x="380" y="184" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">3 actions</text>
+<rect x="288" y="200" width="184" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="208" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="217" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="380" y="232" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">User Account Manager</text>
+<text x="380" y="244" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">5 actions</text>
+<rect x="288" y="328" width="184" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="380" y="360" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">15 direct actions</text>
+<text x="380" y="372" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">grouped · count only</text>
+<line x1="40" y1="420" x2="488" y2="420" stroke="var(--color-rule)" stroke-width="0.8"/>
+<text x="40" y="436" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">LEGEND</text>
+<rect x="40" y="448" width="14" height="10" rx="2" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
+<text x="60" y="456" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Tab</text>
+<rect x="103" y="448" width="14" height="10" rx="2" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<text x="123" y="456" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Submenu</text>
+<rect x="187" y="448" width="14" height="10" rx="2" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="207" y="456" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Direct actions (grouped)</text>
+</svg>
+</div>
+  </div>
+</body>
+</html>

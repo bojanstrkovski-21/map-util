@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linutil menu: Applications Setup · Tree</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --color-paper: #e6e5e0; --color-zone: #dddcd6; --color-paper-2: #dddcd6;
+  --color-node: #efeeea; --color-leaf: #e9e8e3;
+  --color-ink: #2d3142; --color-muted: #4f5d75; --color-soft: #566178; --color-accent: #a83a18;
+  --color-tint: rgba(168,58,24,0.10); --color-rule: rgba(45,49,66,0.16); --color-rail: rgba(45,49,66,0.40);
+  --color-chip-ink: rgba(45,49,66,0.40); --color-chip-accent: rgba(168,58,24,0.50);
+
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --color-paper: #1d283a; --color-zone: #141c2a; --color-paper-2: #141c2a;
+  --color-node: #28334a; --color-leaf: #222d42;
+  --color-ink: #c9e79a; --color-muted: #94a3b8; --color-soft: #94a3b8; --color-accent: #F78C6C;
+  --color-tint: rgba(247,140,108,0.14); --color-rule: rgba(148,163,184,0.22); --color-rail: rgba(148,163,184,0.50);
+  --color-chip-ink: rgba(201,231,154,0.40); --color-chip-accent: rgba(247,140,108,0.55);
+  color-scheme: dark; }
+}
+:root[data-theme="dark"] {
+  --color-paper: #1d283a; --color-zone: #141c2a; --color-paper-2: #141c2a;
+  --color-node: #28334a; --color-leaf: #222d42;
+  --color-ink: #c9e79a; --color-muted: #94a3b8; --color-soft: #94a3b8; --color-accent: #F78C6C;
+  --color-tint: rgba(247,140,108,0.14); --color-rule: rgba(148,163,184,0.22); --color-rail: rgba(148,163,184,0.50);
+  --color-chip-ink: rgba(201,231,154,0.40); --color-chip-accent: rgba(247,140,108,0.55);
+  color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }
+
+body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+  min-height: 100vh; padding: 3rem 2rem; }
+.frame { max-width: 1280px; width: 100%; margin: 0 auto; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+  font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink);
+  margin-bottom: 0.5rem; }
+.lede { font-size: 0.9rem; color: var(--color-muted); margin-bottom: 1.5rem; max-width: 64ch; }
+.diagram-container { width: 100%; overflow-x: auto; }
+svg { width: 100%; display: block; }
+@media print { .diagram-container { overflow-x: visible; } svg { min-width: 0 !important; } }
+
+.tree, .howto, .search { margin-top: 2.5rem; max-width: 1100px; }
+.tree h2, .howto h2, .diagramh { font: 400 1.4rem var(--font-serif); letter-spacing: -0.01em; margin-bottom: 0.25rem; }
+.tree { margin-top: 0; }
+.diagramh { margin: 2.5rem 0 0.75rem; }
+.note { font-size: 0.82rem; color: var(--color-muted); margin-bottom: 1rem; max-width: 72ch; }
+code { font-family: var(--font-mono); font-size: 0.74rem; }
+h3.sub { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--color-muted); margin: 1.5rem 0 0.5rem; }
+.toolbar { display: none; gap: 0.5rem; margin: 0.75rem 0 0.25rem; }
+.js .toolbar { display: flex; }
+.toolbar button { font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
+  background: none; border-radius: 6px; padding: 0.3rem 0.65rem; color: var(--color-ink); cursor: pointer; }
+.toolbar button:hover { background: var(--color-paper-2); }
+.subtabs { display: none; flex-wrap: wrap; gap: 0.25rem; border-bottom: 1px solid var(--color-rule); margin: 1rem 0 0.75rem; }
+.js .subtabs { display: flex; }
+.js .tree.all .subtabs { display: none; }
+.subtab { font: 500 0.8rem var(--font-sans); color: var(--color-muted); background: none; border: 0;
+  border-bottom: 2px solid transparent; padding: 0.5rem 0.8rem; cursor: pointer; margin-bottom: -1px; }
+.subtab .n { font-family: var(--font-mono); font-size: 0.66rem; color: var(--color-soft); margin-left: 0.4rem; }
+.subtab:hover { color: var(--color-ink); }
+.subtab[aria-selected="true"] { color: var(--color-ink); border-bottom-color: var(--color-ink); }
+.subtab:focus-visible, .toolbar button:focus-visible, .results button:focus-visible, #q:focus-visible {
+  outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.subpanel { background: var(--color-paper-2); border: 1px solid var(--color-rule); border-radius: 8px;
+  padding: 0.25rem 0.9rem 0.5rem; margin-bottom: 0.75rem; }
+.subpanel .subgroup .subpanel { background: var(--color-paper); margin: 0.5rem 0; }
+.subpanel > h3.sub { margin-top: 0.75rem; }
+.js .subpanel > h3.sub { display: none; }
+.js .tree.all .subpanel > h3.sub { display: block; }
+.js .subpanel[hidden] { display: none; }
+.js .tree.all .subpanel[hidden] { display: block; }
+.panelnotes { margin: 0.5rem 0 0.25rem; }
+ul.rows { list-style: none; padding: 0; }
+.nm { font-weight: 600; font-size: 0.88rem; }
+.row { display: grid; grid-template-columns: minmax(170px, 1.2fr) minmax(200px, 1.6fr) 2fr; gap: 0.75rem;
+  align-items: baseline; padding: 0.45rem 0.25rem; border-top: 1px solid var(--color-rule); }
+.row:first-child { border-top: 0; }
+.row.flash { outline: 2px solid var(--color-accent); outline-offset: 1px; background: var(--color-tint); }
+.row code.inline { color: var(--color-soft); font-style: italic; }
+.chip { display: inline-block; font: 500 0.65rem var(--font-mono); border: 1px solid var(--color-chip-ink);
+  border-radius: 4px; padding: 0.05rem 0.35rem; margin: 0 0.3rem 0.2rem 0; overflow-wrap: anywhere; }
+.row > *, .results button > * { min-width: 0; overflow-wrap: anywhere; }
+.chip.alt { border-style: dashed; color: var(--color-muted); }
+.search { display: none; }
+.js .search { display: block; position: relative; margin-top: 0; margin-bottom: 1.5rem; max-width: 720px; }
+.search label { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--color-muted); display: block; margin-bottom: 0.4rem; }
+#q { width: 100%; max-width: 560px; font: 400 0.9rem var(--font-sans); padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-rule); border-radius: 6px; background: var(--color-paper-2); color: var(--color-ink); }
+.count { position: absolute; top: 0; right: 0; margin: 0; font: 400 0.72rem var(--font-mono);
+  line-height: 1; color: var(--color-soft); }
+.results { list-style: none; position: absolute; left: 0; right: 0; top: 100%; z-index: 20;
+  max-height: 60vh; overflow-y: auto; background: var(--color-paper-2);
+  border: 1px solid var(--color-rule); border-radius: 8px; }
+.results:empty { display: none; }
+.results button { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.1rem; width: 100%;
+  text-align: left; font: inherit; color: inherit; background: none; border: 0;
+  border-top: 1px solid var(--color-rule); padding: 0.55rem 0.8rem; cursor: pointer; }
+.results li:first-child button { border-top: 0; }
+.results button:hover { background: var(--color-paper-2); }
+.crumb { font-size: 0.78rem; color: var(--color-muted); }
+.howto ol { margin: 0.75rem 0 1rem 1.25rem; font-size: 0.86rem; max-width: 80ch; }
+.howto li { margin-bottom: 0.45rem; line-height: 1.5; }
+.flags { display: grid; grid-template-columns: 3rem 1fr; gap: 0.2rem 0.75rem; font-size: 0.82rem; max-width: 520px; }
+.flags dt { font: 500 0.72rem var(--font-mono); }
+.fulltab { margin-top: 3rem; }
+.topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.themebtn { display: none; font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
+  background: none; border-radius: 6px; padding: 0.35rem 0.7rem; color: var(--color-ink);
+  cursor: pointer; white-space: nowrap; }
+.js .themebtn { display: inline-block; }
+.themebtn:hover, .themebtn[aria-pressed="true"] { background: var(--color-paper-2); }
+.themebtn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+@media (max-width: 720px) {
+  .row, .results button { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
+}
+</style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Menu map · Tree</p>
+    <h1>Linutil menu · Applications Setup</h1>
+    <p class="lede">74 entries: 6 submenus (56 actions) and 18 direct actions.</p>
+<section class="tree" aria-label="Applications Setup full structure">
+<h2>Full structure</h2>
+<p class="note">Edit <code>core/tabs/applications-setup/tab_data.toml</code>. Scripts live under <code>core/tabs/applications-setup/</code>; paths below are relative to that folder. Chips are task flags (hover for the meaning) and restrictions.</p>
+<div class="toolbar"><button type="button" data-act="showall">Show all</button></div>
+<div class="subgroup"><div class="subtabs" role="tablist"><button type="button" class="subtab" role="tab" id="st-1" aria-controls="sp-1" aria-selected="true" tabindex="0">Direct actions<span class="n">18</span></button><button type="button" class="subtab" role="tab" id="st-2" aria-controls="sp-2" aria-selected="false" tabindex="-1">Communication Apps<span class="n">8</span></button><button type="button" class="subtab" role="tab" id="st-3" aria-controls="sp-3" aria-selected="false" tabindex="-1">Design Tools<span class="n">17</span></button><button type="button" class="subtab" role="tab" id="st-4" aria-controls="sp-4" aria-selected="false" tabindex="-1">Developer Tools<span class="n">10</span></button><button type="button" class="subtab" role="tab" id="st-5" aria-controls="sp-5" aria-selected="false" tabindex="-1">Office Suites<span class="n">4</span></button><button type="button" class="subtab" role="tab" id="st-6" aria-controls="sp-6" aria-selected="false" tabindex="-1">PDF Suites<span class="n">4</span></button><button type="button" class="subtab" role="tab" id="st-7" aria-controls="sp-7" aria-selected="false" tabindex="-1">Web Browsers<span class="n">13</span></button></div><div class="subpanel" role="tabpanel" id="sp-1" aria-labelledby="st-1"><h3 class="sub">Direct actions · 18</h3><ul class="rows"><li class="row" id="a-1"><span class="nm">Alacritty</span><code>alacritty-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-2"><span class="nm">Android Debloater</span><code>android-debloat.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-3"><span class="nm">Bash Prompt</span><code>mybash-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-4"><span class="nm">Dank Shell</span><code>dank-shell.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-5"><span class="nm">Docker</span><code>docker-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span></span></li><li class="row" id="a-6"><span class="nm">Fastfetch</span><code>fastfetch-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-7"><span class="nm">Flatpak / Flathub</span><code>setup-flatpak.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-8"><span class="nm">Ghostty</span><code>ghostty-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-9"><span class="nm">Grub Theme</span><code>grub-theme.sh</code><span class="chips"><span class="chip" title="Privileged: File modification">PFM</span></span></li><li class="row" id="a-10"><span class="nm">Kitty</span><code>kitty-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-11"><span class="nm">Linutil Installer</span><code>linutil-installer.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip alt" title="Entry is hidden unless this holds">requires: not command_exists(linutil)</span></span></li><li class="row" id="a-12"><span class="nm">Linutil Updater</span><code>linutil-updater.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip alt" title="Entry is hidden unless this holds">requires: command_exists(linutil)</span></span></li><li class="row" id="a-13"><span class="nm">Noctalia Shell</span><code>noctalia-shell.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-14"><span class="nm">Podman</span><code>podman-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span></span></li><li class="row" id="a-15"><span class="nm">Podman-compose</span><code>podman-compose-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span></span></li><li class="row" id="a-16"><span class="nm">Rofi</span><code>rofi-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-17"><span class="nm">Shelly</span><code>shelly-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span><span class="chip alt" title="Entry is hidden unless this holds">requires: command_exists(pacman)</span></span></li><li class="row" id="a-18"><span class="nm">ZSH Prompt</span><code>zsh-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="File modification">FM</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-2" aria-labelledby="st-2"><h3 class="sub">Communication Apps · 8</h3><ul class="rows"><li class="row" id="a-19"><span class="nm">Discord</span><code>communication-apps/discord-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-20"><span class="nm">Jitsi</span><code>communication-apps/jitsi-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-21"><span class="nm">Signal</span><code>communication-apps/signal-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-22"><span class="nm">Slack</span><code>communication-apps/slack-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-23"><span class="nm">Telegram</span><code>communication-apps/telegram-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-24"><span class="nm">Thunderbird</span><code>communication-apps/thunderbird-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-25"><span class="nm">ZapZap</span><code>communication-apps/zapzap-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-26"><span class="nm">Zoom</span><code>communication-apps/zoom-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-3" aria-labelledby="st-3"><h3 class="sub">Design Tools · 17</h3><ul class="rows"><li class="row" id="a-27"><span class="nm">Ardour</span><code>design-tools/ardour.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-28"><span class="nm">Audacity</span><code>design-tools/audacity.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-29"><span class="nm">Blender</span><code>design-tools/blender.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-30"><span class="nm">Darktable</span><code>design-tools/darktable.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-31"><span class="nm">GNU Image Manipulation Program (GIMP)</span><code>design-tools/gimp.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-32"><span class="nm">Handbrake</span><code>design-tools/handbrake.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-33"><span class="nm">Inkscape</span><code>design-tools/inkscape.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-34"><span class="nm">Krita</span><code>design-tools/krita.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-35"><span class="nm">MyPaint</span><code>design-tools/mypaint.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-36"><span class="nm">Natron</span><code>design-tools/natron.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-37"><span class="nm">OBS Studio</span><code>design-tools/obs-studio.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-38"><span class="nm">Olive</span><code>design-tools/olive.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-39"><span class="nm">OpenShot</span><code>design-tools/openshot.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-40"><span class="nm">Pinta</span><code>design-tools/pinta.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-41"><span class="nm">Scribus</span><code>design-tools/scribus.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-42"><span class="nm">Synfig Studio</span><code>design-tools/synfigstudio.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-43"><span class="nm">Tenacity</span><code>design-tools/tenacity.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-4" aria-labelledby="st-4"><h3 class="sub">Developer Tools · 10</h3><ul class="rows"><li class="row" id="a-44"><span class="nm">Cursor</span><code>developer-tools/cursor.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-45"><span class="nm">Github Desktop</span><code>developer-tools/githubdesktop.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-46"><span class="nm">JetBrains Toolbox</span><code>developer-tools/jetbrains-toolbox.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-47"><span class="nm">Meld</span><code>developer-tools/meld.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Flatpak installation">FI</span></span></li><li class="row" id="a-48"><span class="nm">Neovim</span><code>developer-tools/neovim.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="File modification">FM</span></span></li><li class="row" id="a-49"><span class="nm">Ngrok</span><code>developer-tools/ngrok.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-50"><span class="nm">Sublime Text</span><code>developer-tools/sublime.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-51"><span class="nm">VS Code</span><code>developer-tools/vscode.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-52"><span class="nm">VS Codium</span><code>developer-tools/vscodium.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-53"><span class="nm">Zed</span><code>developer-tools/zed.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-5" aria-labelledby="st-5"><h3 class="sub">Office Suites · 4</h3><ul class="rows"><li class="row" id="a-54"><span class="nm">FreeOffice</span><code>office-suites/freeoffice.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-55"><span class="nm">LibreOffice</span><code>office-suites/libreoffice.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-56"><span class="nm">OnlyOffice</span><code>office-suites/onlyoffice.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-57"><span class="nm">WPS Office</span><code>office-suites/wpsoffice.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-6" aria-labelledby="st-6"><h3 class="sub">PDF Suites · 4</h3><ul class="rows"><li class="row" id="a-58"><span class="nm">Evince</span><code>pdf-suites/evince.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-59"><span class="nm">Okular</span><code>pdf-suites/okular.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-60"><span class="nm">PDF Studio</span><code>pdf-suites/pdfstudio.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-61"><span class="nm">PDF Studio Viewer</span><code>pdf-suites/pdfstudioviewer.sh</code><span class="chips"></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-7" aria-labelledby="st-7"><h3 class="sub">Web Browsers · 13</h3><ul class="rows"><li class="row" id="a-62"><span class="nm">Brave</span><code>browsers/brave.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-63"><span class="nm">Brave Origin</span><code>browsers/brave-origin.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-64"><span class="nm">Chromium</span><code>browsers/chromium.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-65"><span class="nm">Google Chrome</span><code>browsers/google-chrome.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-66"><span class="nm">LibreWolf</span><code>browsers/librewolf.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-67"><span class="nm">Lynx</span><code>browsers/lynx.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-68"><span class="nm">Mozilla Firefox</span><code>browsers/firefox.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-69"><span class="nm">Thorium</span><code>browsers/thorium.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-70"><span class="nm">Tor Browser</span><code>browsers/tor-browser.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-71"><span class="nm">Vivaldi</span><code>browsers/vivaldi.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-72"><span class="nm">waterfox</span><code>browsers/waterfox.sh</code><span class="chips"><span class="chip" title="Flatpak installation">FI</span></span></li><li class="row" id="a-73"><span class="nm">Zen Browser</span><code>browsers/zen-browser.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-74"><span class="nm">Helium Browser</span><code>browsers/helium-browser.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li></ul></div></div>
+</section>
+<h2 class="diagramh">Diagram</h2>
+<div class="diagram-container">
+<svg viewBox="0 0 512 660" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="linutil-applications-setup-title linutil-applications-setup-desc" style="min-width:512px;max-width:512px">
+<title id="linutil-applications-setup-title">Linutil menu: Applications Setup</title>
+<desc id="linutil-applications-setup-desc">Tree of the Applications Setup tab in Linutil, 74 entries across 6 submenus and 18 direct actions.</desc>
+<rect width="100%" height="100%" fill="var(--color-paper)"/>
+<rect x="272" y="40" width="200" height="404" rx="8" fill="var(--color-zone)" stroke="var(--color-rule)" stroke-width="1"/>
+<text x="288" y="60" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">SUBMENUS · 6</text>
+<rect x="272" y="468" width="200" height="104" rx="8" fill="var(--color-zone)" stroke="var(--color-rule)" stroke-width="1"/>
+<text x="288" y="488" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">DIRECT ACTIONS · 18</text>
+<path d="M 208 284 H 240" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 240 284 V 76 Q 240 68 248 68 H 272" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 240 284 V 488 Q 240 496 248 496 H 272" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<rect x="40" y="256" width="168" height="56" rx="6" fill="var(--color-paper)"/>
+<rect x="40" y="256" width="168" height="56" rx="6" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
+<rect x="48" y="264" width="28" height="12" rx="2" fill="transparent" stroke="var(--color-chip-accent)" stroke-width="0.8"/>
+<text x="62" y="273" fill="var(--color-accent)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TAB</text>
+<text x="124" y="296" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Applications Setup</text>
+<text x="124" y="308" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">74 entries</text>
+<rect x="288" y="80" width="168" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="88" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="97" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="372" y="112" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Communication Apps</text>
+<text x="372" y="124" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">8 actions</text>
+<rect x="288" y="140" width="168" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="148" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="157" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="372" y="172" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Design Tools</text>
+<text x="372" y="184" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">17 actions</text>
+<rect x="288" y="200" width="168" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="208" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="217" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="372" y="232" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Developer Tools</text>
+<text x="372" y="244" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">10 actions</text>
+<rect x="288" y="260" width="168" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="268" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="277" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="372" y="292" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Office Suites</text>
+<text x="372" y="304" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">4 actions</text>
+<rect x="288" y="320" width="168" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="328" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="337" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="372" y="352" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">PDF Suites</text>
+<text x="372" y="364" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">4 actions</text>
+<rect x="288" y="380" width="168" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="388" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="397" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="372" y="412" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Web Browsers</text>
+<text x="372" y="424" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">13 actions</text>
+<rect x="288" y="508" width="168" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="372" y="540" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">18 direct actions</text>
+<text x="372" y="552" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">grouped · count only</text>
+<line x1="40" y1="600" x2="472" y2="600" stroke="var(--color-rule)" stroke-width="0.8"/>
+<text x="40" y="616" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">LEGEND</text>
+<rect x="40" y="628" width="14" height="10" rx="2" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
+<text x="60" y="636" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Tab</text>
+<rect x="103" y="628" width="14" height="10" rx="2" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<text x="123" y="636" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Submenu</text>
+<rect x="187" y="628" width="14" height="10" rx="2" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="207" y="636" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Direct actions (grouped)</text>
+</svg>
+</div>
+  </div>
+</body>
+</html>

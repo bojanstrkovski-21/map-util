@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linutil menu: System Setup · Tree</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --color-paper: #e6e5e0; --color-zone: #dddcd6; --color-paper-2: #dddcd6;
+  --color-node: #efeeea; --color-leaf: #e9e8e3;
+  --color-ink: #2d3142; --color-muted: #4f5d75; --color-soft: #566178; --color-accent: #a83a18;
+  --color-tint: rgba(168,58,24,0.10); --color-rule: rgba(45,49,66,0.16); --color-rail: rgba(45,49,66,0.40);
+  --color-chip-ink: rgba(45,49,66,0.40); --color-chip-accent: rgba(168,58,24,0.50);
+
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --color-paper: #1d283a; --color-zone: #141c2a; --color-paper-2: #141c2a;
+  --color-node: #28334a; --color-leaf: #222d42;
+  --color-ink: #c9e79a; --color-muted: #94a3b8; --color-soft: #94a3b8; --color-accent: #F78C6C;
+  --color-tint: rgba(247,140,108,0.14); --color-rule: rgba(148,163,184,0.22); --color-rail: rgba(148,163,184,0.50);
+  --color-chip-ink: rgba(201,231,154,0.40); --color-chip-accent: rgba(247,140,108,0.55);
+  color-scheme: dark; }
+}
+:root[data-theme="dark"] {
+  --color-paper: #1d283a; --color-zone: #141c2a; --color-paper-2: #141c2a;
+  --color-node: #28334a; --color-leaf: #222d42;
+  --color-ink: #c9e79a; --color-muted: #94a3b8; --color-soft: #94a3b8; --color-accent: #F78C6C;
+  --color-tint: rgba(247,140,108,0.14); --color-rule: rgba(148,163,184,0.22); --color-rail: rgba(148,163,184,0.50);
+  --color-chip-ink: rgba(201,231,154,0.40); --color-chip-accent: rgba(247,140,108,0.55);
+  color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }
+
+body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
+  min-height: 100vh; padding: 3rem 2rem; }
+.frame { max-width: 1280px; width: 100%; margin: 0 auto; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+  font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink);
+  margin-bottom: 0.5rem; }
+.lede { font-size: 0.9rem; color: var(--color-muted); margin-bottom: 1.5rem; max-width: 64ch; }
+.diagram-container { width: 100%; overflow-x: auto; }
+svg { width: 100%; display: block; }
+@media print { .diagram-container { overflow-x: visible; } svg { min-width: 0 !important; } }
+
+.tree, .howto, .search { margin-top: 2.5rem; max-width: 1100px; }
+.tree h2, .howto h2, .diagramh { font: 400 1.4rem var(--font-serif); letter-spacing: -0.01em; margin-bottom: 0.25rem; }
+.tree { margin-top: 0; }
+.diagramh { margin: 2.5rem 0 0.75rem; }
+.note { font-size: 0.82rem; color: var(--color-muted); margin-bottom: 1rem; max-width: 72ch; }
+code { font-family: var(--font-mono); font-size: 0.74rem; }
+h3.sub { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--color-muted); margin: 1.5rem 0 0.5rem; }
+.toolbar { display: none; gap: 0.5rem; margin: 0.75rem 0 0.25rem; }
+.js .toolbar { display: flex; }
+.toolbar button { font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
+  background: none; border-radius: 6px; padding: 0.3rem 0.65rem; color: var(--color-ink); cursor: pointer; }
+.toolbar button:hover { background: var(--color-paper-2); }
+.subtabs { display: none; flex-wrap: wrap; gap: 0.25rem; border-bottom: 1px solid var(--color-rule); margin: 1rem 0 0.75rem; }
+.js .subtabs { display: flex; }
+.js .tree.all .subtabs { display: none; }
+.subtab { font: 500 0.8rem var(--font-sans); color: var(--color-muted); background: none; border: 0;
+  border-bottom: 2px solid transparent; padding: 0.5rem 0.8rem; cursor: pointer; margin-bottom: -1px; }
+.subtab .n { font-family: var(--font-mono); font-size: 0.66rem; color: var(--color-soft); margin-left: 0.4rem; }
+.subtab:hover { color: var(--color-ink); }
+.subtab[aria-selected="true"] { color: var(--color-ink); border-bottom-color: var(--color-ink); }
+.subtab:focus-visible, .toolbar button:focus-visible, .results button:focus-visible, #q:focus-visible {
+  outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.subpanel { background: var(--color-paper-2); border: 1px solid var(--color-rule); border-radius: 8px;
+  padding: 0.25rem 0.9rem 0.5rem; margin-bottom: 0.75rem; }
+.subpanel .subgroup .subpanel { background: var(--color-paper); margin: 0.5rem 0; }
+.subpanel > h3.sub { margin-top: 0.75rem; }
+.js .subpanel > h3.sub { display: none; }
+.js .tree.all .subpanel > h3.sub { display: block; }
+.js .subpanel[hidden] { display: none; }
+.js .tree.all .subpanel[hidden] { display: block; }
+.panelnotes { margin: 0.5rem 0 0.25rem; }
+ul.rows { list-style: none; padding: 0; }
+.nm { font-weight: 600; font-size: 0.88rem; }
+.row { display: grid; grid-template-columns: minmax(170px, 1.2fr) minmax(200px, 1.6fr) 2fr; gap: 0.75rem;
+  align-items: baseline; padding: 0.45rem 0.25rem; border-top: 1px solid var(--color-rule); }
+.row:first-child { border-top: 0; }
+.row.flash { outline: 2px solid var(--color-accent); outline-offset: 1px; background: var(--color-tint); }
+.row code.inline { color: var(--color-soft); font-style: italic; }
+.chip { display: inline-block; font: 500 0.65rem var(--font-mono); border: 1px solid var(--color-chip-ink);
+  border-radius: 4px; padding: 0.05rem 0.35rem; margin: 0 0.3rem 0.2rem 0; overflow-wrap: anywhere; }
+.row > *, .results button > * { min-width: 0; overflow-wrap: anywhere; }
+.chip.alt { border-style: dashed; color: var(--color-muted); }
+.search { display: none; }
+.js .search { display: block; position: relative; margin-top: 0; margin-bottom: 1.5rem; max-width: 720px; }
+.search label { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--color-muted); display: block; margin-bottom: 0.4rem; }
+#q { width: 100%; max-width: 560px; font: 400 0.9rem var(--font-sans); padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-rule); border-radius: 6px; background: var(--color-paper-2); color: var(--color-ink); }
+.count { position: absolute; top: 0; right: 0; margin: 0; font: 400 0.72rem var(--font-mono);
+  line-height: 1; color: var(--color-soft); }
+.results { list-style: none; position: absolute; left: 0; right: 0; top: 100%; z-index: 20;
+  max-height: 60vh; overflow-y: auto; background: var(--color-paper-2);
+  border: 1px solid var(--color-rule); border-radius: 8px; }
+.results:empty { display: none; }
+.results button { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.1rem; width: 100%;
+  text-align: left; font: inherit; color: inherit; background: none; border: 0;
+  border-top: 1px solid var(--color-rule); padding: 0.55rem 0.8rem; cursor: pointer; }
+.results li:first-child button { border-top: 0; }
+.results button:hover { background: var(--color-paper-2); }
+.crumb { font-size: 0.78rem; color: var(--color-muted); }
+.howto ol { margin: 0.75rem 0 1rem 1.25rem; font-size: 0.86rem; max-width: 80ch; }
+.howto li { margin-bottom: 0.45rem; line-height: 1.5; }
+.flags { display: grid; grid-template-columns: 3rem 1fr; gap: 0.2rem 0.75rem; font-size: 0.82rem; max-width: 520px; }
+.flags dt { font: 500 0.72rem var(--font-mono); }
+.fulltab { margin-top: 3rem; }
+.topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.themebtn { display: none; font: 500 0.72rem var(--font-sans); border: 1px solid var(--color-rule);
+  background: none; border-radius: 6px; padding: 0.35rem 0.7rem; color: var(--color-ink);
+  cursor: pointer; white-space: nowrap; }
+.js .themebtn { display: inline-block; }
+.themebtn:hover, .themebtn[aria-pressed="true"] { background: var(--color-paper-2); }
+.themebtn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+@media (max-width: 720px) {
+  .row, .results button { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
+}
+</style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Menu map · Tree</p>
+    <h1>Linutil menu · System Setup</h1>
+    <p class="lede">37 entries: 6 submenus (27 actions) and 10 direct actions.</p>
+<section class="tree" aria-label="System Setup full structure">
+<h2>Full structure</h2>
+<p class="note">Edit <code>core/tabs/system-setup/tab_data.toml</code>. Scripts live under <code>core/tabs/system-setup/</code>; paths below are relative to that folder. Chips are task flags (hover for the meaning) and restrictions.</p>
+<div class="toolbar"><button type="button" data-act="showall">Show all</button></div>
+<div class="subgroup"><div class="subtabs" role="tablist"><button type="button" class="subtab" role="tab" id="st-18" aria-controls="sp-18" aria-selected="true" tabindex="0">Direct actions<span class="n">10</span></button><button type="button" class="subtab" role="tab" id="st-19" aria-controls="sp-19" aria-selected="false" tabindex="-1">Alpine<span class="n">1</span></button><button type="button" class="subtab" role="tab" id="st-20" aria-controls="sp-20" aria-selected="false" tabindex="-1">Arch<span class="n">14</span></button><button type="button" class="subtab" role="tab" id="st-21" aria-controls="sp-21" aria-selected="false" tabindex="-1">Debian<span class="n">1</span></button><button type="button" class="subtab" role="tab" id="st-22" aria-controls="sp-22" aria-selected="false" tabindex="-1">Desktop Environment Setup<span class="n">2</span></button><button type="button" class="subtab" role="tab" id="st-23" aria-controls="sp-23" aria-selected="false" tabindex="-1">Fedora<span class="n">8</span></button><button type="button" class="subtab" role="tab" id="st-24" aria-controls="sp-24" aria-selected="false" tabindex="-1">Ubuntu<span class="n">1</span></button></div><div class="subpanel" role="tabpanel" id="sp-18" aria-labelledby="st-18"><h3 class="sub">Direct actions · 10</h3><ul class="rows"><li class="row" id="a-115"><span class="nm">Build Prerequisites</span><code>compile-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-116"><span class="nm">Enable SSD TRIM</span><code>fstrim-setup.sh</code><span class="chips"><span class="chip" title="Disk modification">D</span><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span><span class="chip alt" title="Entry is hidden unless this holds">requires: command_exists(systemctl)</span></span></li><li class="row" id="a-117"><span class="nm">Full System Cleanup</span><code>system-cleanup.sh</code><span class="chips"><span class="chip" title="Package removal">RP</span><span class="chip" title="Privileged: File modification">PFM</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-118"><span class="nm">Full System Update</span><code>system-update.sh</code><span class="chips"><span class="chip" title="Privileged: File modification">PFM</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-119"><span class="nm">Full System Update (Topgrade)</span><code>system-update-topgrade.sh</code><span class="chips"><span class="chip" title="Privileged: File modification">PFM</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-120"><span class="nm">Global Theme</span><code>global-theme.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Privileged: File modification">PFM</span></span></li><li class="row" id="a-121"><span class="nm">PipeWire Audio</span><code>pipewire-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-122"><span class="nm">Remove Snaps</span><code>remove-snaps.sh</code><span class="chips"><span class="chip" title="Package removal">RP</span></span></li><li class="row" id="a-123"><span class="nm">TTY Fonts</span><code>terminus-tty.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Privileged: File modification">PFM</span></span></li><li class="row" id="a-124"><span class="nm">Zram Swap</span><code>zram-setup.sh</code><span class="chips"><span class="chip" title="Privileged: File modification">PFM</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-19" aria-labelledby="st-19"><h3 class="sub">Alpine · 1</h3><p class="panelnotes"><span class="chip alt">requires: command_exists(apk)</span></p><ul class="rows"><li class="row" id="a-125"><span class="nm">Alpine Update</span><code>alpine/alpine-upgrade.sh</code><span class="chips"><span class="chip" title="P">P</span><span class="chip" title="Package manager action">MP</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-20" aria-labelledby="st-20"><h3 class="sub">Arch · 14</h3><p class="panelnotes"><span class="chip alt">requires: command_exists(pacman)</span></p><ul class="rows"><li class="row" id="a-126"><span class="nm">Arch Server Setup</span><code>arch/server-setup.sh</code><span class="chips"><span class="chip" title="Full system installation">SI</span><span class="chip" title="Disk modification">D</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-127"><span class="nm">DWM-Titus</span><code>arch/dwmtitus-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Privileged: File modification">PFM</span><span class="chip" title="Service or systemd action">SS</span></span></li><li class="row" id="a-128"><span class="nm">Hyprland JaKooLit</span><code>arch/hyprland-kool.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Package manager action">MP</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-129"><span class="nm">Install CachyOS Repository and Kernel</span><code>arch/cachyos-repos.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Kernel modification">K</span><span class="chip" title="Package removal">RP</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-130"><span class="nm">Install Chaotic-AUR Repository</span><code>arch/chaotic-aur-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-131"><span class="nm">Linux Neptune for SteamDeck</span><code>arch/linux-neptune.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Privileged: File modification">PFM</span><span class="chip" title="Kernel modification">K</span><span class="chip alt" title="Entry is hidden unless this holds">requires: containing_file /sys/devices/virtual/dmi/id/board_vendor in (Valve)</span></span></li><li class="row" id="a-132"><span class="nm">Nvidia Drivers &amp; Hardware Acceleration</span><code>arch/nvidia-drivers.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="File modification">FM</span><span class="chip" title="Service or systemd action">SS</span></span></li><li class="row" id="a-133"><span class="nm">Omarchy Rice by DHH</span><code>arch/omarchy.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Package manager action">MP</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-134"><span class="nm">Pacman Config</span><code>arch/pacman-config.sh</code><span class="chips"><span class="chip" title="Privileged: File modification">PFM</span></span></li><li class="row" id="a-135"><span class="nm">Paru AUR Helper</span><code>arch/paru-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-136"><span class="nm">Snapper Snapshots</span><code>arch/snapshot-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Privileged: File modification">PFM</span><span class="chip" title="Service or systemd action">SS</span><span class="chip alt" title="Entry is hidden unless this holds">requires: command_exists(btrfs)</span></span></li><li class="row" id="a-137"><span class="nm">System Maintenance</span><code>arch/system-maintenance.sh</code><span class="chips"><span class="chip" title="Privileged: File modification">PFM</span><span class="chip" title="Package removal">RP</span></span></li><li class="row" id="a-138"><span class="nm">Virtualization</span><code>arch/virtualization.sh</code><span class="chips"><span class="chip" title="File modification">FM</span><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span><span class="chip" title="Package removal">RP</span></span></li><li class="row" id="a-139"><span class="nm">Yay AUR Helper</span><code>arch/yay-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-21" aria-labelledby="st-21"><h3 class="sub">Debian · 1</h3><p class="panelnotes"><span class="chip alt">requires: containing_file /etc/os-release in (ID=debian)</span></p><ul class="rows"><li class="row" id="a-140"><span class="nm">Hyprland JaKooLit</span><code>debian/hyprland-kool-deb.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Package manager action">MP</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-22" aria-labelledby="st-22"><h3 class="sub">Desktop Environment Setup · 2</h3><ul class="rows"><li class="row" id="a-141"><span class="nm">Install Desktop Environment</span><code>desktop-environments.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-142"><span class="nm">Uninstall Desktop Environment</span><code>desktop-environments-uninstall.sh</code><span class="chips"><span class="chip" title="Package removal">RP</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-23" aria-labelledby="st-23"><h3 class="sub">Fedora · 8</h3><p class="panelnotes"><span class="chip alt">requires: command_exists(dnf); command_exists(btrfs)</span></p><ul class="rows"><li class="row" id="a-143"><span class="nm">Btrfs Assistant, Snapper Config, grub-btrfs</span><code>fedora/fedora-btrfs-assistant.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Privileged: File modification">PFM</span><span class="chip" title="Service or systemd action">SS</span></span></li><li class="row" id="a-144"><span class="nm">Configure DNF</span><code>fedora/configure-dnf.sh</code><span class="chips"><span class="chip" title="Privileged: File modification">PFM</span></span></li><li class="row" id="a-145"><span class="nm">Hyprland JaKooLit</span><code>fedora/hyprland-kool-fed.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Package manager action">MP</span></span></li><li class="row" id="a-146"><span class="nm">Multimedia Codecs</span><code>fedora/multimedia-codecs.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-147"><span class="nm">Nvidia Proprietary Drivers</span><code>fedora/nvidia-proprietary-driver-setup.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li><li class="row" id="a-148"><span class="nm">RPM Fusion</span><code>fedora/rpm-fusion-setup.sh</code><span class="chips"><span class="chip" title="Package manager action">MP</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-149"><span class="nm">Upgrade to a New Fedora Release</span><code>fedora/fedora-upgrade.sh</code><span class="chips"><span class="chip" title="Package manager action">MP</span></span></li><li class="row" id="a-150"><span class="nm">Virtualization</span><code>fedora/virtualization.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span></span></li></ul></div><div class="subpanel" role="tabpanel" id="sp-24" aria-labelledby="st-24"><h3 class="sub">Ubuntu · 1</h3><p class="panelnotes"><span class="chip alt">requires: containing_file /etc/os-release in (ID=ubuntu); containing_file /etc/os-release in (VERSION_ID=&quot;24.04&quot;)</span></p><ul class="rows"><li class="row" id="a-151"><span class="nm">Hyprland JaKooLit</span><code>ubuntu/hyprland-kool-ubuntu24.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Package manager action">MP</span></span></li></ul></div></div>
+</section>
+<h2 class="diagramh">Diagram</h2>
+<div class="diagram-container">
+<svg viewBox="0 0 564 660" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="linutil-system-setup-title linutil-system-setup-desc" style="min-width:564px;max-width:564px">
+<title id="linutil-system-setup-title">Linutil menu: System Setup</title>
+<desc id="linutil-system-setup-desc">Tree of the System Setup tab in Linutil, 37 entries across 6 submenus and 10 direct actions.</desc>
+<rect width="100%" height="100%" fill="var(--color-paper)"/>
+<rect x="272" y="40" width="252" height="404" rx="8" fill="var(--color-zone)" stroke="var(--color-rule)" stroke-width="1"/>
+<text x="288" y="60" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">SUBMENUS · 6</text>
+<rect x="272" y="468" width="252" height="104" rx="8" fill="var(--color-zone)" stroke="var(--color-rule)" stroke-width="1"/>
+<text x="288" y="488" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">DIRECT ACTIONS · 10</text>
+<path d="M 208 284 H 240" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 240 284 V 76 Q 240 68 248 68 H 272" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 240 284 V 488 Q 240 496 248 496 H 272" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<rect x="40" y="256" width="168" height="56" rx="6" fill="var(--color-paper)"/>
+<rect x="40" y="256" width="168" height="56" rx="6" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
+<rect x="48" y="264" width="28" height="12" rx="2" fill="transparent" stroke="var(--color-chip-accent)" stroke-width="0.8"/>
+<text x="62" y="273" fill="var(--color-accent)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TAB</text>
+<text x="124" y="296" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">System Setup</text>
+<text x="124" y="308" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">37 entries</text>
+<rect x="288" y="80" width="220" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="88" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="97" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="398" y="112" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Alpine</text>
+<text x="398" y="124" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">1 actions</text>
+<rect x="288" y="140" width="220" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="148" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="157" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="398" y="172" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Arch</text>
+<text x="398" y="184" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">14 actions</text>
+<rect x="288" y="200" width="220" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="208" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="217" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="398" y="232" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Debian</text>
+<text x="398" y="244" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">1 actions</text>
+<rect x="288" y="260" width="220" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="268" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="277" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="398" y="292" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Desktop Environment Setup</text>
+<text x="398" y="304" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">2 actions</text>
+<rect x="288" y="320" width="220" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="328" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="337" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="398" y="352" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Fedora</text>
+<text x="398" y="364" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">8 actions</text>
+<rect x="288" y="380" width="220" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<rect x="296" y="388" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
+<text x="314" y="397" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">MENU</text>
+<text x="398" y="412" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Ubuntu</text>
+<text x="398" y="424" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">1 actions</text>
+<rect x="288" y="508" width="220" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="398" y="540" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">10 direct actions</text>
+<text x="398" y="552" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">grouped · count only</text>
+<line x1="40" y1="600" x2="524" y2="600" stroke="var(--color-rule)" stroke-width="0.8"/>
+<text x="40" y="616" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">LEGEND</text>
+<rect x="40" y="628" width="14" height="10" rx="2" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
+<text x="60" y="636" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Tab</text>
+<rect x="103" y="628" width="14" height="10" rx="2" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<text x="123" y="636" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Submenu</text>
+<rect x="187" y="628" width="14" height="10" rx="2" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="1" stroke-dasharray="4,3"/>
+<text x="207" y="636" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Direct actions (grouped)</text>
+</svg>
+</div>
+  </div>
+</body>
+</html>
