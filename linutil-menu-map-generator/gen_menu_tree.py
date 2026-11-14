@@ -419,12 +419,13 @@ development environment: it holds the generator scripts that build these pages f
 <p class="actions"><a class="btn primary" href="{GH_URL}" target="_blank" rel="noopener">View on GitHub</a></p>
 <h3 class="sub">In the repository</h3>
 <dl class="flags docsrepo">
-<dt>linutil-menu-map/</dt><dd>These pages, plus a text outline of every entry</dd>
+<dt>index.html</dt><dd>This map, the home page of the site</dd>
+<dt>linutil-menu-map/</dt><dd>The per-tab and full-structure pages, plus a text outline of every entry</dd>
 <dt>linutil-menu-map-generator/</dt><dd>The Python scripts that regenerate them</dd>
 <dt>.claude/, .agents/</dt><dd>The installed diagram-design skill</dd>
 </dl>"""
     full = ('<iframe id="fsframe" title="Linutil full structure" loading="lazy" '
-            'src="linutil-full-structure.html?embed=1"></iframe>')
+            'src="linutil-menu-map/linutil-full-structure.html?embed=1"></iframe>')
     items = [('About', about), ('Full structure', full)]
     btns, panels = [], []
     for i, (label, inner) in enumerate(items, 1):
@@ -543,7 +544,9 @@ def main():
         panels.append((slug, t['name'], str(t['total']), l, svg, plain[t['dir']], True))
     panels.append((DEFAULT_TAB, 'About', '', 'About this site and where it lives.', None,
                    about_html(), False))
-    (mm.OUT / 'index.html').write_text(wrapper(panels, recs2))
+    # The tabbed map is the site home page at the repo root; other pages stay in OUT.
+    (mm.OUT.parent / 'index.html').write_text(wrapper(panels, recs2))
+    (mm.OUT / 'index.html').unlink(missing_ok=True)
     (mm.OUT / 'linutil-full-structure.html').write_text(fullpage(tabs, trees, recs))
     print('entries indexed:', len(recs), len(recs2), 'expected', total)
 
