@@ -1,6 +1,6 @@
 # map-util
 
-An interactive map of the [Linutil](https://github.com/ChrisTitusTech/linutil) menu: every top-level tab, its submenus, and its direct actions, with the script path, task flags and restrictions of each entry. At the time of writing that is 186 entries across 5 tabs.
+Home page for two menu maps. The [Linutil](https://github.com/ChrisTitusTech/linutil) map lists every tab, submenu, and direct action (186 entries across 5 tabs). The Arch-Boki map lists every menu opened by `03.arch-boki-post-install-gum.sh` (297 entries).
 
 **Live site:** https://bojanstrkovski-21.github.io/map-util/
 
@@ -17,9 +17,10 @@ The site is published with GitHub Pages from this repository. The repository is 
 
 | Path | What it is |
 | --- | --- |
-| `index.html` | The map, the home page of the site |
-| `linutil-menu-map/` | The per-tab and full-structure pages, plus `linutil-menu-outline.md`, a text outline of every entry |
+| `index.html` | Home page for both maps |
+| `linutil-menu-map/` | The Linutil map (`index.html`), the per-tab and full-structure pages, plus `linutil-menu-outline.md` |
 | `linutil-menu-map-generator/` | The Python scripts that regenerate the pages and the outline |
+| `archboki-post-map/` | The same kind of map for the Arch-Boki post-install gum menu. Open `archboki-post-map/index.html` |
 | `.claude/`, `.agents/`, `skills-lock.json` | The installed [diagram-design](https://github.com/cathrynlavery/diagram-design) skill |
 
 For the full list of entries without opening the site, see [`linutil-menu-map/linutil-menu-outline.md`](linutil-menu-map/linutil-menu-outline.md).
@@ -34,9 +35,9 @@ python3 linutil-menu-map-generator/gen_menu_tree.py
 python3 linutil-menu-map-generator/gen_outline.py
 ```
 
-`gen_menu_tree.py` writes `index.html` and the pages in `linutil-menu-map/`; `gen_outline.py` writes the text outline.
+`gen_menu_tree.py` writes the home page at `index.html` and the Linutil map in `linutil-menu-map/`; `gen_outline.py` writes the text outline. The Arch-Boki map is `python3 archboki-post-map/gen_post_map.py`.
 
-The scripts currently contain absolute paths to the author's machine. To run them elsewhere, change `TABS` (the input, `linutil/core/tabs`) and `OUT` (the output folder) at the top of `gen_menu_map.py`, and `TABS` and `OUT` in `gen_outline.py`.
+`gen_menu_map.py` and `gen_menu_tree.py` find Linutil and the output folder from the repository root. `gen_outline.py` still has absolute paths under `/home/bojan/Projects/diagram/` and needs those two constants changed before it will run here.
 
 ## Credits
 

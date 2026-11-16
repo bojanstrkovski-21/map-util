@@ -41,15 +41,20 @@
 
 body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
   min-height: 100vh; padding: 3rem 2rem; }
-.frame { max-width: 1280px; width: 100%; margin: 0 auto; }
+.frame { max-width: 1440px; width: 100%; margin: 0 auto; }
 .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
   letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
 h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
   font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink);
   margin-bottom: 0.5rem; }
 .lede { font-size: 0.9rem; color: var(--color-muted); margin-bottom: 1.5rem; max-width: 64ch; }
-.diagram-container { width: 100%; overflow-x: auto; }
-svg { width: 100%; display: block; }
+.diagram-container { width: 100%; overflow-x: auto; display: flex; flex-direction: column; gap: 1.75rem; }
+svg { width: 100%; display: block; height: auto; }
+.glyph { width: 0.95rem; height: 0.95rem; flex: none; color: var(--color-ink); }
+.nm { display: flex; align-items: center; gap: 0.4rem; }
+.subtab { display: inline-flex; align-items: center; gap: 0.35rem; }
+h3.sub { display: flex; align-items: center; gap: 0.35rem; }
+h3.sub .glyph { width: 0.8rem; height: 0.8rem; }
 @media print { .diagram-container { overflow-x: visible; } svg { min-width: 0 !important; } }
 
 .tree, .howto, .search { margin-top: 2.5rem; max-width: 1100px; }
@@ -68,8 +73,9 @@ h3.sub { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transf
 .subtabs { display: none; flex-wrap: wrap; gap: 0.25rem; border-bottom: 1px solid var(--color-rule); margin: 1rem 0 0.75rem; }
 .js .subtabs { display: flex; }
 .js .tree.all .subtabs { display: none; }
-.subtab { font: 500 0.8rem var(--font-sans); color: var(--color-muted); background: none; border: 0;
-  border-bottom: 2px solid transparent; padding: 0.5rem 0.8rem; cursor: pointer; margin-bottom: -1px; }
+.subtab { display: inline-flex; align-items: center; gap: 0.35rem; font: 500 0.8rem var(--font-sans);
+  color: var(--color-muted); background: none; border: 0; border-bottom: 2px solid transparent;
+  padding: 0.5rem 0.8rem; cursor: pointer; margin-bottom: -1px; }
 .subtab .n { font-family: var(--font-mono); font-size: 0.66rem; color: var(--color-soft); margin-left: 0.4rem; }
 .subtab:hover { color: var(--color-ink); }
 .subtab[aria-selected="true"] { color: var(--color-ink); border-bottom-color: var(--color-ink); }
@@ -80,12 +86,14 @@ h3.sub { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transf
 .subpanel .subgroup .subpanel { background: var(--color-paper); margin: 0.5rem 0; }
 .subpanel > h3.sub { margin-top: 0.75rem; }
 .js .subpanel > h3.sub { display: none; }
-.js .tree.all .subpanel > h3.sub { display: block; }
+.js .tree.all .subpanel > h3.sub { display: flex; }
 .js .subpanel[hidden] { display: none; }
 .js .tree.all .subpanel[hidden] { display: block; }
 .panelnotes { margin: 0.5rem 0 0.25rem; }
 ul.rows { list-style: none; padding: 0; }
-.nm { font-weight: 600; font-size: 0.88rem; }
+.nm { display: flex; align-items: center; gap: 0.4rem; font-weight: 600; font-size: 0.88rem; }
+.glyph { width: 0.95rem; height: 0.95rem; flex: none; color: var(--color-ink); }
+h3.sub .glyph, .subtab .glyph { width: 0.8rem; height: 0.8rem; }
 .row { display: grid; grid-template-columns: minmax(170px, 1.2fr) minmax(200px, 1.6fr) 2fr; gap: 0.75rem;
   align-items: baseline; padding: 0.45rem 0.25rem; border-top: 1px solid var(--color-rule); }
 .row:first-child { border-top: 0; }
@@ -155,127 +163,161 @@ ul.rows { list-style: none; padding: 0; }
     <h1>Linutil menu overview</h1>
     <p class="lede">186 entries across 5 tabs. Each list shows submenus with action counts; open a tab for its diagram and full structure.</p>
 <div class="diagram-container">
-<svg viewBox="0 0 1184 452" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="linutil-overview-title linutil-overview-desc" style="min-width:1184px;max-width:1184px">
-<title id="linutil-overview-title">Linutil menu overview</title>
-<desc id="linutil-overview-desc">Tree of the Linutil menu: a root with 5 top-level tabs, each listing its submenus and a count of direct actions, 186 entries in total.</desc>
+<svg viewBox="0 0 864 558" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="linutil-overview-title linutil-overview-desc" style="width:100%;max-width:864px;min-width:736px;height:auto">
+<title id="linutil-overview-title">Linutil menu overview · 1 of 2</title>
+<desc id="linutil-overview-desc">Tree of the Linutil menu: a root with 5 top-level tabs, 186 entries. A folder is a submenu. Direct actions sit on the tab.</desc>
 <rect width="100%" height="100%" fill="var(--color-paper)"/>
-<path d="M 592 88 V 136" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
-<path d="M 592 112 H 152 Q 144 112 144 120 V 136" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
-<path d="M 592 112 H 1032 Q 1040 112 1040 120 V 136" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
-<path d="M 368 112 V 136" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
-<path d="M 816 112 V 136" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
-<rect x="488" y="40" width="208" height="48" rx="6" fill="var(--color-paper)"/>
-<rect x="488" y="40" width="208" height="48" rx="6" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
-<rect x="496" y="48" width="36" height="12" rx="2" fill="transparent" stroke="var(--color-chip-accent)" stroke-width="0.8"/>
-<text x="514" y="57" fill="var(--color-accent)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ROOT</text>
-<text x="592" y="72" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Linutil</text>
-<text x="592" y="84" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">186 entries · 5 tabs</text>
-<rect x="40" y="136" width="208" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
-<rect x="48" y="144" width="28" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
-<text x="62" y="153" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TAB</text>
-<text x="144" y="168" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Applications Setup</text>
-<text x="144" y="180" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">74 entries · 6 menus</text>
-<rect x="264" y="136" width="208" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
-<rect x="272" y="144" width="28" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
-<text x="286" y="153" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TAB</text>
-<text x="368" y="168" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Gaming</text>
-<text x="368" y="180" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">36 entries · 3 menus</text>
-<rect x="488" y="136" width="208" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
-<rect x="496" y="144" width="28" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
-<text x="510" y="153" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TAB</text>
-<text x="592" y="168" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Security</text>
-<text x="592" y="180" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">4 entries</text>
-<rect x="712" y="136" width="208" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
-<rect x="720" y="144" width="28" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
-<text x="734" y="153" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TAB</text>
-<text x="816" y="168" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">System Setup</text>
-<text x="816" y="180" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">37 entries · 6 menus</text>
-<rect x="936" y="136" width="208" height="48" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
-<rect x="944" y="144" width="28" height="12" rx="2" fill="transparent" stroke="var(--color-chip-ink)" stroke-width="0.8"/>
-<text x="958" y="153" fill="var(--color-ink)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TAB</text>
-<text x="1040" y="168" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Utilities</text>
-<text x="1040" y="180" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">35 entries · 3 menus</text>
-<line x1="56" y1="184" x2="56" y2="348" stroke="var(--color-rail)" stroke-width="0.8"/>
-<line x1="56" y1="204" x2="68" y2="204" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="72" y="208" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Communication Apps</text>
-<text x="240" y="207" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">8</text>
-<line x1="56" y1="228" x2="68" y2="228" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="72" y="232" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Design Tools</text>
-<text x="240" y="231" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">17</text>
-<line x1="56" y1="252" x2="68" y2="252" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="72" y="256" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Developer Tools</text>
-<text x="240" y="255" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">10</text>
+<path d="M 432 112 V 140" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 164 140 H 700" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 164 140 V 156" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 432 140 V 156" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 700 140 V 156" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<rect x="308" y="40" width="248" height="72" rx="6" fill="var(--color-paper)"/>
+<rect x="308" y="40" width="248" height="72" rx="6" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
+<text x="432" y="96" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Linutil</text>
+<text x="432" y="108" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">186 entries · 5 tabs</text>
+<g transform="translate(316 48)" fill="none" stroke="var(--color-accent)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6.5h6M5 9.5h6M5 12.5h3.5"/></g>
+<rect x="40" y="156" width="248" height="72" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<text x="164" y="212" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Applications Setup</text>
+<text x="164" y="224" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">74 entries</text>
+<g transform="translate(48 164)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<line x1="56" y1="228" x2="56" y2="406" stroke="var(--color-rail)" stroke-width="0.8"/>
+<line x1="56" y1="250" x2="68" y2="250" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 239)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="88" y="253" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Communication Apps</text>
 <line x1="56" y1="276" x2="68" y2="276" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="72" y="280" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Office Suites</text>
-<text x="240" y="279" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">4</text>
-<line x1="56" y1="300" x2="68" y2="300" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="72" y="304" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">PDF Suites</text>
-<text x="240" y="303" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">4</text>
-<line x1="56" y1="324" x2="68" y2="324" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="72" y="328" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Web Browsers</text>
-<text x="240" y="327" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">13</text>
-<line x1="56" y1="348" x2="68" y2="348" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="72" y="352" fill="var(--color-muted)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start" font-style="italic">Direct actions</text>
-<text x="240" y="351" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">18</text>
-<line x1="280" y1="184" x2="280" y2="276" stroke="var(--color-rail)" stroke-width="0.8"/>
-<line x1="280" y1="204" x2="292" y2="204" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="296" y="208" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Emulators</text>
-<text x="464" y="207" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">18</text>
-<line x1="280" y1="228" x2="292" y2="228" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="296" y="232" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Game Launchers</text>
-<text x="464" y="231" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">4</text>
-<line x1="280" y1="252" x2="292" y2="252" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="296" y="256" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Tools and Setups</text>
-<text x="464" y="255" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">9</text>
-<line x1="280" y1="276" x2="292" y2="276" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="296" y="280" fill="var(--color-muted)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start" font-style="italic">Direct actions</text>
-<text x="464" y="279" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">5</text>
-<line x1="504" y1="184" x2="504" y2="204" stroke="var(--color-rail)" stroke-width="0.8"/>
-<line x1="504" y1="204" x2="516" y2="204" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="520" y="208" fill="var(--color-muted)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start" font-style="italic">Direct actions</text>
-<text x="688" y="207" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">4</text>
-<line x1="728" y1="184" x2="728" y2="348" stroke="var(--color-rail)" stroke-width="0.8"/>
-<line x1="728" y1="204" x2="740" y2="204" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="744" y="208" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Alpine</text>
-<text x="912" y="207" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">1</text>
-<line x1="728" y1="228" x2="740" y2="228" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="744" y="232" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Arch</text>
-<text x="912" y="231" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">14</text>
-<line x1="728" y1="252" x2="740" y2="252" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="744" y="256" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Debian</text>
-<text x="912" y="255" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">1</text>
-<line x1="728" y1="276" x2="740" y2="276" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="744" y="280" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Desktop Environment Setup</text>
-<text x="912" y="279" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">2</text>
-<line x1="728" y1="300" x2="740" y2="300" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="744" y="304" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Fedora</text>
-<text x="912" y="303" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">8</text>
-<line x1="728" y1="324" x2="740" y2="324" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="744" y="328" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Ubuntu</text>
-<text x="912" y="327" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">1</text>
-<line x1="728" y1="348" x2="740" y2="348" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="744" y="352" fill="var(--color-muted)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start" font-style="italic">Direct actions</text>
-<text x="912" y="351" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">10</text>
-<line x1="952" y1="184" x2="952" y2="276" stroke="var(--color-rail)" stroke-width="0.8"/>
-<line x1="952" y1="204" x2="964" y2="204" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="968" y="208" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Monitor Control</text>
-<text x="1136" y="207" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">12</text>
-<line x1="952" y1="228" x2="964" y2="228" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="968" y="232" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Printers</text>
-<text x="1136" y="231" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">3</text>
-<line x1="952" y1="252" x2="964" y2="252" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="968" y="256" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">User Account Manager</text>
-<text x="1136" y="255" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">5</text>
-<line x1="952" y1="276" x2="964" y2="276" stroke="var(--color-rail)" stroke-width="0.8"/>
-<text x="968" y="280" fill="var(--color-muted)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start" font-style="italic">Direct actions</text>
-<text x="1136" y="279" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="end">15</text>
-<line x1="40" y1="392" x2="1144" y2="392" stroke="var(--color-rule)" stroke-width="0.8"/>
-<text x="40" y="408" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">LEGEND</text>
-<rect x="40" y="420" width="14" height="10" rx="2" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
-<text x="60" y="428" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Root</text>
-<rect x="108" y="420" width="14" height="10" rx="2" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
-<text x="128" y="428" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Top-level tab</text>
-<text x="231" y="428" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start" font-style="italic">Each list: submenus with their action counts; &quot;Direct actions&quot; sit on the tab itself.</text>
+<g transform="translate(70 265)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="88" y="279" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Design Tools</text>
+<line x1="56" y1="302" x2="68" y2="302" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 291)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="88" y="305" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Developer Tools</text>
+<line x1="56" y1="328" x2="68" y2="328" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 317)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="88" y="331" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Office Suites</text>
+<line x1="56" y1="354" x2="68" y2="354" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 343)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="88" y="357" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">PDF Suites</text>
+<line x1="56" y1="380" x2="68" y2="380" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 369)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="88" y="383" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Web Browsers</text>
+<line x1="56" y1="406" x2="68" y2="406" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 395)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></g>
+<text x="88" y="409" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Direct actions · 18</text>
+<rect x="308" y="156" width="248" height="72" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<text x="432" y="212" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Gaming</text>
+<text x="432" y="224" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">36 entries</text>
+<g transform="translate(316 164)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<line x1="324" y1="228" x2="324" y2="458" stroke="var(--color-rail)" stroke-width="0.8"/>
+<line x1="324" y1="250" x2="336" y2="250" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(338 239)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="356" y="253" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Emulators</text>
+<line x1="324" y1="276" x2="350" y2="276" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(352 265)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="370" y="279" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Multi-System Emulators</text>
+<line x1="324" y1="302" x2="350" y2="302" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(352 291)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="370" y="305" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Nintendo Emulators</text>
+<line x1="324" y1="328" x2="350" y2="328" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(352 317)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="370" y="331" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">PlayStation Emulators</text>
+<line x1="324" y1="354" x2="350" y2="354" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(352 343)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="370" y="357" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Sega Emulators</text>
+<line x1="324" y1="380" x2="350" y2="380" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(352 369)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="370" y="383" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Xbox Emulators</text>
+<line x1="324" y1="406" x2="336" y2="406" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(338 395)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="356" y="409" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Game Launchers</text>
+<line x1="324" y1="432" x2="336" y2="432" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(338 421)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="356" y="435" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Tools and Setups</text>
+<line x1="324" y1="458" x2="336" y2="458" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(338 447)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></g>
+<text x="356" y="461" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Direct actions · 5</text>
+<rect x="576" y="156" width="248" height="72" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<text x="700" y="212" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Security</text>
+<text x="700" y="224" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">4 entries</text>
+<g transform="translate(584 164)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<line x1="592" y1="228" x2="592" y2="250" stroke="var(--color-rail)" stroke-width="0.8"/>
+<line x1="592" y1="250" x2="604" y2="250" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(606 239)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></g>
+<text x="624" y="253" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Direct actions · 4</text>
+<line x1="40" y1="502" x2="824" y2="502" stroke="var(--color-rule)" stroke-width="0.8"/>
+<text x="40" y="518" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">LEGEND</text>
+<g transform="translate(40 527)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6.5h6M5 9.5h6M5 12.5h3.5"/></g>
+<text x="62" y="539" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Menu</text>
+<g transform="translate(108 527)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="130" y="539" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Submenu</text>
+<g transform="translate(192 527)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></g>
+<text x="214" y="539" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Action</text>
+<text x="279" y="539" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start" font-style="italic">More than four blocks is split near half. Open a tab for every action.</text>
+</svg>
+<svg viewBox="0 0 596 528" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="linutil-overview-2-title linutil-overview-2-desc" style="width:100%;max-width:596px;min-width:520px;height:auto">
+<title id="linutil-overview-2-title">Linutil menu overview · 2 of 2</title>
+<desc id="linutil-overview-2-desc">Tree of the Linutil menu: a root with 5 top-level tabs, 186 entries. A folder is a submenu. Direct actions sit on the tab.</desc>
+<rect width="100%" height="100%" fill="var(--color-paper)"/>
+<path d="M 298 112 V 140" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 164 140 H 432" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 164 140 V 156" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<path d="M 432 140 V 156" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
+<rect x="174" y="40" width="248" height="72" rx="6" fill="var(--color-paper)"/>
+<rect x="174" y="40" width="248" height="72" rx="6" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
+<text x="298" y="96" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Linutil</text>
+<text x="298" y="108" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">186 entries · 5 tabs</text>
+<g transform="translate(182 48)" fill="none" stroke="var(--color-accent)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6.5h6M5 9.5h6M5 12.5h3.5"/></g>
+<rect x="40" y="156" width="248" height="72" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<text x="164" y="212" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">System Setup</text>
+<text x="164" y="224" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">37 entries</text>
+<g transform="translate(48 164)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<line x1="56" y1="228" x2="56" y2="406" stroke="var(--color-rail)" stroke-width="0.8"/>
+<line x1="56" y1="250" x2="68" y2="250" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 239)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="88" y="253" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Alpine</text>
+<line x1="56" y1="276" x2="68" y2="276" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 265)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="88" y="279" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Arch</text>
+<line x1="56" y1="302" x2="68" y2="302" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 291)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="88" y="305" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Debian</text>
+<line x1="56" y1="328" x2="68" y2="328" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 317)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="88" y="331" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Desktop Environment Setup</text>
+<line x1="56" y1="354" x2="68" y2="354" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 343)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="88" y="357" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Fedora</text>
+<line x1="56" y1="380" x2="68" y2="380" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 369)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="88" y="383" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Ubuntu</text>
+<line x1="56" y1="406" x2="68" y2="406" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 395)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></g>
+<text x="88" y="409" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Direct actions · 10</text>
+<rect x="308" y="156" width="248" height="72" rx="6" fill="var(--color-node)" stroke="var(--color-ink)" stroke-width="1"/>
+<text x="432" y="212" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Utilities</text>
+<text x="432" y="224" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">35 entries</text>
+<g transform="translate(316 164)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<line x1="324" y1="228" x2="324" y2="328" stroke="var(--color-rail)" stroke-width="0.8"/>
+<line x1="324" y1="250" x2="336" y2="250" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(338 239)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="356" y="253" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Monitor Control</text>
+<line x1="324" y1="276" x2="336" y2="276" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(338 265)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="356" y="279" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Printers</text>
+<line x1="324" y1="302" x2="336" y2="302" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(338 291)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="356" y="305" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">User Account Manager</text>
+<line x1="324" y1="328" x2="336" y2="328" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(338 317)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></g>
+<text x="356" y="331" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Direct actions · 15</text>
+<line x1="40" y1="450" x2="556" y2="450" stroke="var(--color-rule)" stroke-width="0.8"/>
+<text x="40" y="466" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">LEGEND</text>
+<g transform="translate(40 475)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6.5h6M5 9.5h6M5 12.5h3.5"/></g>
+<text x="62" y="487" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Menu</text>
+<g transform="translate(108 475)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="130" y="487" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Submenu</text>
+<g transform="translate(192 475)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></g>
+<text x="214" y="487" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Action</text>
+<text x="40" y="506" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start" font-style="italic">More than four blocks is split near half. Open a tab for every action.</text>
 </svg>
 </div>
 

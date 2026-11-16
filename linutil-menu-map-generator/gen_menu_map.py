@@ -5,8 +5,9 @@ import math
 import tomllib
 from pathlib import Path
 
-TABS = Path('/home/bojan/Projects/diagram/linutil/core/tabs')
-OUT = Path('/home/bojan/Projects/diagram/linutil-menu-map')
+ROOT = Path(__file__).resolve().parents[1]
+TABS = ROOT / 'linutil' / 'core' / 'tabs'
+OUT = ROOT / 'linutil-menu-map'
 
 # Colors are CSS variables; the light and dark values live in THEME below.
 C = {k: f'var(--color-{k.replace("_", "-")})' for k in (
@@ -168,8 +169,10 @@ def legend(y0, items, note=None, width=None):
 
 
 def svg_wrap(slug, title, desc, W, H, body):
+    floor = g4(max(520, W * 0.85))
+    style = f'width:100%;max-width:{W}px;min-width:{floor}px;height:auto'
     return (f'<svg viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" role="img" '
-            f'aria-labelledby="{slug}-title {slug}-desc" style="min-width:{W}px;max-width:{W}px">\n'
+            f'aria-labelledby="{slug}-title {slug}-desc" style="{style}">\n'
             f'<title id="{slug}-title">{esc(title)}</title>\n'
             f'<desc id="{slug}-desc">{esc(desc)}</desc>\n'
             f'<rect width="100%" height="100%" fill="{C["paper"]}"/>\n'
@@ -177,168 +180,238 @@ def svg_wrap(slug, title, desc, W, H, body):
 
 
 # -------------------------------------------------------------- overview
-def overview(tabs):
-    slug = 'linutil-overview'
-    TW, GAP, n = 208, 16, len(tabs)
-    assert n % 2 == 1
-    X0 = 40
-    row_w = n * TW + (n - 1) * GAP
-    W = g4(row_w + 80)
-    total = sum(t['total'] for t in tabs)
-    root_x = X0 + (row_w - TW) // 2
-    root_cx = root_x + TW // 2
-    centers = [X0 + TW // 2 + i * (TW + GAP) for i in range(n)]
-    ROOT_Y, BUS_Y, TAB_Y, H48 = 40, 112, 136, 48
+ICON_PATHS = {
+    'menu': '<rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6.5h6M5 9.5h6M5 12.5h3.5"/>',
+    'folder': '<path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/>',
+    'script': '<rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/>',
+}
 
-    conn, nodes, lists = [], [], []
-    conn.append(path(f'M {root_cx} {ROOT_Y + H48} V {TAB_Y}'))
-    mid = n // 2
-    conn.append(path(f'M {root_cx} {BUS_Y} H {centers[0] + 8} Q {centers[0]} {BUS_Y} '
-                     f'{centers[0]} {BUS_Y + 8} V {TAB_Y}'))
-    conn.append(path(f'M {root_cx} {BUS_Y} H {centers[-1] - 8} Q {centers[-1]} {BUS_Y} '
-                     f'{centers[-1]} {BUS_Y + 8} V {TAB_Y}'))
-    for i in range(1, n - 1):
-        if i != mid:
-            conn.append(path(f'M {centers[i]} {BUS_Y} V {TAB_Y}'))
 
-    nodes.append(node(root_x, ROOT_Y, TW, H48, 'Linutil', f'{total} entries · {n} tabs',
-                      'root', 'ROOT'))
-    bottom = TAB_Y + H48
-    for i, t in enumerate(tabs):
-        tx = X0 + i * (TW + GAP)
-        sub = f"{t['total']} entries"
-        if t['folders']:
-            sub += f" · {len(t['folders'])} menus"
-        nodes.append(node(tx, TAB_Y, TW, H48, t['name'], sub, 'tab', 'TAB'))
-        rows = [(f['name'], str(f['leaves']), False) for f in t['folders']]
-        if t['loose']:
-            rows.append(('Direct actions', str(len(t['loose'])), True))
-        railx = tx + 16
-        first = TAB_Y + H48 + 20
-        last = first + (len(rows) - 1) * 24
-        lists.append(f'<line x1="{railx}" y1="{TAB_Y + H48}" x2="{railx}" y2="{last}" '
-                     f'stroke="{C["rail"]}" stroke-width="0.8"/>')
-        for j, (nm, cnt, direct) in enumerate(rows):
-            cy = first + j * 24
-            lists.append(f'<line x1="{railx}" y1="{cy}" x2="{railx + 12}" y2="{cy}" '
-                         f'stroke="{C["rail"]}" stroke-width="0.8"/>')
-            style = ' font-style="italic"' if direct else ''
-            col = C['muted'] if direct else C['ink']
-            lists.append(text(tx + 32, cy + 4, nm, 11, col, SANS, anchor='start', extra=style))
-            lists.append(text(tx + TW - 8, cy + 3, cnt, 9, C['soft'], MONO, anchor='end'))
+def icon_svg(mark, x, y, color=None):
+    color = color or C['ink']
+    return (f'<g transform="translate({x} {y})" fill="none" stroke="{color}" '
+            f'stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">'
+            f'{ICON_PATHS[mark]}</g>')
+
+
+def html_icon(mark):
+    return (f'<svg class="glyph" viewBox="0 0 16 16" aria-hidden="true" fill="none" '
+            f'stroke="currentColor" stroke-width="1.2" stroke-linecap="round" '
+            f'stroke-linejoin="round">{ICON_PATHS[mark]}</svg>')
+
+
+def norm_rail(item):
+    if len(item) == 2:
+        return item[0], item[1], 0
+    return item
+
+
+def draw_rail(body, railx, top, rail):
+    step = 26
+    if not rail:
+        return top
+    first = top + 22
+    last = first + (len(rail) - 1) * step
+    body.append(f'<line x1="{railx}" y1="{top}" x2="{railx}" y2="{last}" '
+                f'stroke="{C["rail"]}" stroke-width="0.8"/>')
+    for j, item in enumerate(rail):
+        label, rmark, indent = norm_rail(item)
+        cy = first + j * step
+        ix = railx + 14 + indent * 14
+        body.append(f'<line x1="{railx}" y1="{cy}" x2="{ix - 2}" y2="{cy}" '
+                    f'stroke="{C["rail"]}" stroke-width="0.8"/>')
+        body.append(icon_svg(rmark, ix, cy - 11))
+        body.append(text(ix + 18, cy + 3, label, 11, C['ink'], SANS, anchor='start'))
+    return last
+
+
+def legend_marks(y0, note, width):
+    items = [('menu', 'Menu'), ('folder', 'Submenu'), ('script', 'Action')]
+    out = [f'<line x1="40" y1="{y0}" x2="{width - 40}" y2="{y0}" stroke="{C["rule"]}" stroke-width="0.8"/>',
+           text(40, y0 + 16, 'LEGEND', 8, C['muted'], MONO, anchor='start',
+                extra=' letter-spacing="0.18em"')]
+    x, ky = 40, y0 + 28
+    for mark, label in items:
+        out.append(icon_svg(mark, x, ky - 3))
+        out.append(text(x + 22, ky + 9, label, 8.5, C['muted'], SANS, anchor='start'))
+        x += 22 + int(len(label) * 5.2) + 26
+    extra = 0
+    if note:
+        note_w = int(len(note) * 4.8)
+        if x + 8 + note_w <= width - 40:
+            out.append(text(x + 8, ky + 9, note, 8.5, C['muted'], SANS, anchor='start',
+                            extra=' font-style="italic"'))
+        else:
+            out.append(text(40, ky + 28, note, 8.5, C['muted'], SANS, anchor='start',
+                            extra=' font-style="italic"'))
+            extra = 22
+    return '\n'.join(out), extra
+
+
+def col_width(columns):
+    need = 248
+    for name, sub, _kind, _mark, rail in columns:
+        need = max(need, int(len(name) * 7.4) + 48, int(len(sub or '') * 6.2) + 48)
+        for item in rail or []:
+            label, _rmark, indent = norm_rail(item)
+            need = max(need, 16 + 14 + indent * 14 + 18 + int(len(label) * 6.6) + 20)
+    return g4(min(need, 520))
+
+
+def split_near_half(items):
+    if len(items) <= 4:
+        return [items]
+    left = (len(items) + 1) // 2
+    return split_near_half(items[:left]) + split_near_half(items[left:])
+
+
+def _columns_svg(slug, title, desc, root_name, root_sub, columns, note):
+    n = len(columns)
+    tw, gap = col_width(columns), 20
+    x0 = 40
+    row_w = n * tw + (n - 1) * gap
+    width = g4(row_w + 80)
+    root_w = min(max(248, int(len(root_name) * 7.4) + 48), row_w)
+    root_x = x0 + max(0, (row_w - root_w) // 2)
+    root_y, tab_y, h = 40, 156, 72
+    centers = [x0 + tw // 2 + i * (tw + gap) for i in range(n)]
+    body = [path(f'M {root_x + root_w // 2} {root_y + h} V {root_y + h + 28}')]
+    if n > 1:
+        body.append(path(f'M {centers[0]} {root_y + h + 28} H {centers[-1]}'))
+        for cx in centers:
+            body.append(path(f'M {cx} {root_y + h + 28} V {tab_y}'))
+    else:
+        body.append(path(f'M {root_x + root_w // 2} {root_y + h + 28} V {tab_y}'))
+    body.append(node(root_x, root_y, root_w, h, root_name, root_sub, 'root', None))
+    # glyph on the root, drawn over the empty tag area
+    body.append(icon_svg('menu', root_x + 8, root_y + 8, C['accent']))
+    bottom = tab_y + h
+    for i, (name, sub, kind, mark, rail) in enumerate(columns):
+        tx = x0 + i * (tw + gap)
+        body.append(node(tx, tab_y, tw, h, name, sub, kind, None))
+        body.append(icon_svg(mark, tx + 8, tab_y + 8))
+        if not rail:
+            continue
+        last = draw_rail(body, tx + 16, tab_y + h, rail)
         bottom = max(bottom, last + 16)
     ly = bottom + 28
-    H = ly + 60
-    body = '\n'.join(conn + nodes + lists + [legend(
-        ly, [('root', 'Root'), ('tab', 'Top-level tab')],
-        'Each list: submenus with their action counts; "Direct actions" sit on the tab itself.',
-        W)])
+    legend, extra = legend_marks(ly, note, width)
+    body.append(legend)
+    return svg_wrap(slug, title, desc, width, ly + 56 + extra, '\n'.join(body))
+
+
+def columns_svg(slug, title, desc, root_name, root_sub, columns, note):
+    parts = split_near_half(columns)
+    if len(parts) == 1:
+        return _columns_svg(slug, title, desc, root_name, root_sub, columns, note)
+    drawn = []
+    for i, part in enumerate(parts):
+        slug_i = slug if i == 0 else f'{slug}-{i + 1}'
+        title_i = f'{title} · {i + 1} of {len(parts)}'
+        drawn.append(_columns_svg(slug_i, title_i, desc, root_name, root_sub, part, note))
+    return '\n'.join(drawn)
+
+
+def rail_from_entries(entries, depth=0):
+    rail = []
+    for e in entries:
+        if 'entries' in e:
+            rail.append((e['name'], 'folder', depth))
+            rail.extend(rail_from_entries(e['entries'], depth + 1))
+        else:
+            rail.append((e['name'], 'script', depth))
+    return rail
+
+
+def tab_columns(raw):
+    direct, branches = [], []
+    for e in raw:
+        if 'entries' not in e:
+            direct.append((e['name'], 'script'))
+            continue
+        kids = e['entries']
+        nested = any('entries' in c for c in kids)
+        if nested or len(kids) > 1:
+            branches.append((e['name'], rail_from_entries(kids)))
+        elif kids:
+            only = kids[0]
+            direct.append((only['name'] if 'entries' not in only else e['name'], 'script'))
+        else:
+            direct.append((e['name'], 'script'))
+    columns = []
+    if direct:
+        n = len(direct)
+        sub = f'{n} action' if n == 1 else f'{n} actions'
+        columns.append(('Direct actions', sub, 'menu', 'folder', direct))
+    for name, rail in branches:
+        n = sum(1 for item in rail if norm_rail(item)[1] == 'script')
+        sub = f'{n} action' if n == 1 else f'{n} actions'
+        columns.append((name, sub, 'menu', 'folder', rail))
+    return columns
+
+
+def overview_columns(tabs):
+    columns = []
+    for t in tabs:
+        rail = []
+        for f in t['folders']:
+            rail.append((f['name'], 'folder', 0))
+            for subname, _cnt in f['subs']:
+                rail.append((subname, 'folder', 1))
+        if t['loose']:
+            n = len(t['loose'])
+            rail.append((f'Direct actions · {n}', 'script', 0))
+        sub = f"{t['total']} entries"
+        columns.append((t['name'], sub, 'menu', 'folder', rail))
+    return columns
+
+
+def overview(tabs):
+    total = sum(t['total'] for t in tabs)
+    columns = overview_columns(tabs)
     title = 'Linutil menu overview'
-    desc = (f'Tree of the Linutil menu: a root with {n} top-level tabs, each listing its '
-            f'submenus and a count of direct actions, {total} entries in total.')
-    return slug, svg_wrap(slug, title, desc, W, H, body), W, title, desc
+    desc = (f'Tree of the Linutil menu: a root with {len(tabs)} top-level tabs, '
+            f'{total} entries. A folder is a submenu. Direct actions sit on the tab.')
+    svg = columns_svg(
+        'linutil-overview', title, desc,
+        'Linutil', f'{total} entries · {len(tabs)} tabs', columns,
+        'More than four blocks is split near half. Open a tab for every action.')
+    return 'linutil-overview', svg, 0, title, desc
 
 
-# ---------------------------------------------------------------- per tab
 def tab_diagram(t):
     slug = f"linutil-{t['dir']}"
-    folders, loose = t['folders'], t['loose']
-    named = len(loose) <= GROUP_LIMIT
-    gname = f'{len(loose)} direct actions'
-    gsub = 'grouped · count only'
-
-    labels = [f['name'] for f in folders] + (loose if named else [gname])
-    subs = [folder_sub(f) for f in folders] + ([] if named else [gsub])
-    NW = g4(max([168] + [tw(l, 12, 0.62) + 32 for l in labels]
-                + [tw(s, 9, 0.62) + 32 for s in subs]))
-    RW = g4(max(168, tw(t['name'], 12, 0.62) + 32))
-    RX, RH = 40, 56
-    bx = RX + RW + 32
-    ZX = bx + 32
-    ZW = 32 + NW
-
-    def zh(rows):
-        return 40 + rows * 48 + (rows - 1) * 12 + 16
-
-    zones, nodes, conn = [], [], []
-    A = B = Cz = None
-    y = 40
-    if folders:
-        A = dict(x=ZX, y=y, w=ZW, h=zh(len(folders)))
-        y = A['y'] + A['h'] + 24
-    if loose:
-        rows = len(loose) if named else 1
-        B = dict(x=ZX, y=y, w=ZW, h=zh(rows))
-    entries = [z['y'] + 28 for z in (A, B) if z]
-
-    # root node position
-    cy = entries[0] if len(entries) == 1 else g4(sum(entries) / 2)
-    ry = cy - RH // 2
-    nodes.append(node(RX, ry, RW, RH, t['name'], f"{t['total']} entries", 'root', 'TAB'))
-    rx = RX + RW
-    zx = ZX
-    if len(entries) == 1:
-        conn.append(path(f'M {rx} {cy} H {zx}') if cy == entries[0] else '')
-    else:
-        conn.append(path(f'M {rx} {cy} H {bx}'))
-        for ey in entries:
-            d = 1 if ey > cy else -1
-            conn.append(path(f'M {bx} {cy} V {ey - 8 * d} Q {bx} {ey} {bx + 8} {ey} H {zx}'))
-
-    max_right = ZX + ZW
-    max_bottom = ry + RH
-    if A:
-        zones.append(zone(A['x'], A['y'], A['w'], A['h'], f'SUBMENUS · {len(folders)}'))
-        for i, f in enumerate(folders):
-            ny = A['y'] + 40 + i * 60
-            nodes.append(node(A['x'] + 16, ny, NW, 48, f['name'], folder_sub(f), 'menu', 'MENU'))
-            if f['subs']:
-                assert Cz is None
-                cx0 = A['x'] + A['w'] + 56
-                names = [s[0] for s in f['subs']]
-                subl = [f'{s[1]} actions' for s in f['subs']]
-                CN = g4(max([168] + [tw(l, 12, 0.62) + 32 for l in names]
-                            + [tw(s, 9, 0.62) + 32 for s in subl]))
-                Cz = dict(x=cx0, y=A['y'], w=32 + CN, h=zh(len(names)))
-                ncy = ny + 24
-                assert Cz['y'] < ncy < Cz['y'] + Cz['h']
-                conn.append(path(f"M {A['x'] + 16 + NW} {ncy} H {Cz['x']}"))
-                zones.append(zone(Cz['x'], Cz['y'], Cz['w'], Cz['h'],
-                                  f"{f['name'].upper()} · {len(names)} SUBMENUS"))
-                for k, (nm, cnt) in enumerate(f['subs']):
-                    nodes.append(node(Cz['x'] + 16, Cz['y'] + 40 + k * 60, CN, 48, nm,
-                                      f'{cnt} actions', 'menu', 'MENU'))
-                max_right = max(max_right, Cz['x'] + Cz['w'])
-                max_bottom = max(max_bottom, Cz['y'] + Cz['h'])
-        max_bottom = max(max_bottom, A['y'] + A['h'])
-    if B:
-        zones.append(zone(B['x'], B['y'], B['w'], B['h'], f'DIRECT ACTIONS · {len(loose)}'))
-        if named:
-            for i, nm in enumerate(loose):
-                nodes.append(node(B['x'] + 16, B['y'] + 40 + i * 60, NW, 48, nm, None, 'leaf'))
-        else:
-            nodes.append(node(B['x'] + 16, B['y'] + 40, NW, 48, gname, gsub, 'group'))
-        max_bottom = max(max_bottom, B['y'] + B['h'])
-
-    W = g4(max_right + 40)
-    ly = max_bottom + 28
-    H = ly + 60
-    items = [('root', 'Tab')]
-    if A:
-        items.append(('menu', 'Submenu'))
-    if B:
-        items.append(('leaf', 'Direct action') if named else ('group', 'Direct actions (grouped)'))
-    body = '\n'.join(zones + [c for c in conn if c] + nodes + [legend(ly, items, None, W)])
-    n_menus = len(folders)
+    columns = tab_columns(t['raw'])
+    # A tab that is only direct actions is one trunk, not a block named Direct actions under itself.
+    only_direct = len(columns) == 1 and columns[0][0] == 'Direct actions'
     title = f"Linutil menu: {t['name']}"
+    n_menus = len(t['folders'])
     parts = []
     if n_menus:
-        parts.append(f'{n_menus} submenus')
-    if loose:
-        parts.append(f'{len(loose)} direct actions')
+        parts.append(f"{n_menus} submenus")
+    if t['loose']:
+        parts.append(f"{len(t['loose'])} direct actions")
     desc = (f"Tree of the {t['name']} tab in Linutil, {t['total']} entries across "
             f"{' and '.join(parts)}.")
-    return slug, svg_wrap(slug, title, desc, W, H, body), W, title, desc
+    note = 'A folder opens another menu. A shell mark is one action. Blocks past four are split near half.'
+    if only_direct:
+        rail = columns[0][4]
+        tw = col_width([(t['name'], columns[0][1], 'menu', 'menu', rail)])
+        width = g4(max(tw + 80, 560))
+        x0, h = 40, 72
+        root_w = min(tw, max(248, int(len(t['name']) * 7.4) + 48))
+        root_x = x0 + max(0, (tw - root_w) // 2)
+        body = [node(root_x, 40, root_w, h, t['name'], columns[0][1], 'root', None),
+                icon_svg('menu', root_x + 8, 48, C['accent'])]
+        last = draw_rail(body, x0 + 16, 40 + h, rail)
+        ly = last + 28
+        legend, extra = legend_marks(ly, note, width)
+        body.append(legend)
+        svg = svg_wrap(slug, title, desc, width, ly + 56 + extra, '\n'.join(body))
+    else:
+        svg = columns_svg(slug, title, desc, t['name'], f"{t['total']} entries", columns, note)
+    return slug, svg, 0, title, desc
+
 
 
 # ------------------------------------------------------------------ pages
@@ -347,15 +420,20 @@ CSS_BASE = """
 /*THEME*/
 body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
   min-height: 100vh; padding: 3rem 2rem; }
-.frame { max-width: 1280px; width: 100%; margin: 0 auto; }
+.frame { max-width: 1440px; width: 100%; margin: 0 auto; }
 .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
   letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
 h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
   font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink);
   margin-bottom: 0.5rem; }
 .lede { font-size: 0.9rem; color: var(--color-muted); margin-bottom: 1.5rem; max-width: 64ch; }
-.diagram-container { width: 100%; overflow-x: auto; }
-svg { width: 100%; display: block; }
+.diagram-container { width: 100%; overflow-x: auto; display: flex; flex-direction: column; gap: 1.75rem; }
+svg { width: 100%; display: block; height: auto; }
+.glyph { width: 0.95rem; height: 0.95rem; flex: none; color: var(--color-ink); }
+.nm { display: flex; align-items: center; gap: 0.4rem; }
+.subtab { display: inline-flex; align-items: center; gap: 0.35rem; }
+h3.sub { display: flex; align-items: center; gap: 0.35rem; }
+h3.sub .glyph { width: 0.8rem; height: 0.8rem; }
 @media print { .diagram-container { overflow-x: visible; } svg { min-width: 0 !important; } }
 """
 CSS_BASE = CSS_BASE.replace('/*THEME*/', THEME)

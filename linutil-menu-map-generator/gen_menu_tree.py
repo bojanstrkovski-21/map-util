@@ -53,7 +53,7 @@ def action_row(e, aid, multi_ok):
     p = pre(e)
     if p:
         chips.append(f'<span class="chip alt" title="Entry is hidden unless this holds">requires: {esc(p)}</span>')
-    return (f'<li class="row" id="a-{aid}"><span class="nm">{esc(e["name"])}</span>{code}'
+    return (f'<li class="row" id="a-{aid}"><span class="nm">{mm.html_icon("script")}{esc(e["name"])}</span>{code}'
             f'<span class="chips">{"".join(chips)}</span></li>')
 
 
@@ -89,11 +89,13 @@ def build_tree(tab, recs, ctr):
             ctr['p'] += 1
             k = ctr['p']
             sel = 'true' if i == 0 else 'false'
+            mark = 'folder' if 'class="subgroup"' in inner else 'menu'
             btns.append(f'<button type="button" class="subtab" role="tab" id="st-{k}" aria-controls="sp-{k}" '
-                        f'aria-selected="{sel}" tabindex="{0 if i == 0 else -1}">{esc(label)}'
+                        f'aria-selected="{sel}" tabindex="{0 if i == 0 else -1}">'
+                        f'{mm.html_icon(mark)}{esc(label)}'
                         f'<span class="n">{count}</span></button>')
             panels.append(f'<div class="subpanel" role="tabpanel" id="sp-{k}" aria-labelledby="st-{k}">'
-                          f'<h3 class="sub">{esc(label)} · {count}</h3>{note}{inner}</div>')
+                          f'<h3 class="sub">{mm.html_icon(mark)}{esc(label)} · {count}</h3>{note}{inner}</div>')
         return (f'<div class="subgroup"><div class="subtabs" role="tablist">{"".join(btns)}</div>'
                 f'{"".join(panels)}</div>')
 
@@ -177,8 +179,9 @@ h3.sub { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transf
 .subtabs { display: none; flex-wrap: wrap; gap: 0.25rem; border-bottom: 1px solid var(--color-rule); margin: 1rem 0 0.75rem; }
 .js .subtabs { display: flex; }
 .js .tree.all .subtabs { display: none; }
-.subtab { font: 500 0.8rem var(--font-sans); color: var(--color-muted); background: none; border: 0;
-  border-bottom: 2px solid transparent; padding: 0.5rem 0.8rem; cursor: pointer; margin-bottom: -1px; }
+.subtab { display: inline-flex; align-items: center; gap: 0.35rem; font: 500 0.8rem var(--font-sans);
+  color: var(--color-muted); background: none; border: 0; border-bottom: 2px solid transparent;
+  padding: 0.5rem 0.8rem; cursor: pointer; margin-bottom: -1px; }
 .subtab .n { font-family: var(--font-mono); font-size: 0.66rem; color: var(--color-soft); margin-left: 0.4rem; }
 .subtab:hover { color: var(--color-ink); }
 .subtab[aria-selected="true"] { color: var(--color-ink); border-bottom-color: var(--color-ink); }
@@ -189,12 +192,14 @@ h3.sub { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transf
 .subpanel .subgroup .subpanel { background: var(--color-paper); margin: 0.5rem 0; }
 .subpanel > h3.sub { margin-top: 0.75rem; }
 .js .subpanel > h3.sub { display: none; }
-.js .tree.all .subpanel > h3.sub { display: block; }
+.js .tree.all .subpanel > h3.sub { display: flex; }
 .js .subpanel[hidden] { display: none; }
 .js .tree.all .subpanel[hidden] { display: block; }
 .panelnotes { margin: 0.5rem 0 0.25rem; }
 ul.rows { list-style: none; padding: 0; }
-.nm { font-weight: 600; font-size: 0.88rem; }
+.nm { display: flex; align-items: center; gap: 0.4rem; font-weight: 600; font-size: 0.88rem; }
+.glyph { width: 0.95rem; height: 0.95rem; flex: none; color: var(--color-ink); }
+h3.sub .glyph, .subtab .glyph { width: 0.8rem; height: 0.8rem; }
 .row { display: grid; grid-template-columns: minmax(170px, 1.2fr) minmax(200px, 1.6fr) 2fr; gap: 0.75rem;
   align-items: baseline; padding: 0.45rem 0.25rem; border-top: 1px solid var(--color-rule); }
 .row:first-child { border-top: 0; }
@@ -404,8 +409,19 @@ EARLY = ("<script>try{var t=localStorage.getItem('linutil-map-theme');"
          "catch(e){}</script>")
 THEME_BTN = '<button type="button" class="themebtn" id="themebtn" aria-pressed="false">Dark mode</button>'
 GH_URL = 'https://github.com/bojanstrkovski-21/map-util'
-TOP_ACTIONS = (f'<div class="topactions"><a class="btn" href="{GH_URL}" target="_blank" '
-               f'rel="noopener">GitHub</a>{THEME_BTN}</div>')
+
+
+LINUTIL_GH = 'https://github.com/ChrisTitusTech/linutil'
+ARCH_GH = 'https://github.com/bojanstrkovski-21/arch-boki-post-install-dev'
+MAP_LINKS = ('../index.html', '../archboki-post-map/index.html')
+
+
+def top_actions(home_href, arch_href):
+    return (f'<div class="topactions">'
+            f'<a class="btn" href="{home_href}">Home</a>'
+            f'<a class="btn" href="{arch_href}" target="_blank" rel="noopener">Arch-Boki map</a>'
+            f'<a class="btn" href="{GH_URL}" target="_blank" rel="noopener">Source repo</a>'
+            f'{THEME_BTN}</div>')
 
 
 DEFAULT_TAB = 'about'
@@ -419,13 +435,14 @@ development environment: it holds the generator scripts that build these pages f
 <p class="actions"><a class="btn primary" href="{GH_URL}" target="_blank" rel="noopener">View on GitHub</a></p>
 <h3 class="sub">In the repository</h3>
 <dl class="flags docsrepo">
-<dt>index.html</dt><dd>This map, the home page of the site</dd>
-<dt>linutil-menu-map/</dt><dd>The per-tab and full-structure pages, plus a text outline of every entry</dd>
+<dt>index.html</dt><dd>Home page for both maps</dd>
+<dt>linutil-menu-map/</dt><dd>This map, the per-tab and full-structure pages, plus a text outline of every entry</dd>
+<dt>archboki-post-map/</dt><dd>The Arch-Boki post-install map</dd>
 <dt>linutil-menu-map-generator/</dt><dd>The Python scripts that regenerate them</dd>
 <dt>.claude/, .agents/</dt><dd>The installed diagram-design skill</dd>
 </dl>"""
     full = ('<iframe id="fsframe" title="Linutil full structure" loading="lazy" '
-            'src="linutil-menu-map/linutil-full-structure.html?embed=1"></iframe>')
+            'src="linutil-full-structure.html?embed=1"></iframe>')
     items = [('About', about), ('Full structure', full)]
     btns, panels = [], []
     for i, (label, inner) in enumerate(items, 1):
@@ -490,7 +507,7 @@ def wrapper(panels, recs):
     return (head('Linutil menu map', mm.CSS_BASE + mm.CSS_TABS + CSS_TREE, True) + f"""
     <div class="topbar"><div>
     <p class="eyebrow">Menu map · Tree</p>
-    <h1>Linutil menu map</h1></div>{TOP_ACTIONS}</div>
+    <h1>Linutil menu map</h1></div>{top_actions(*MAP_LINKS)}</div>
     <p class="lede">Every top-level tab of the Linutil menu, with its submenus and direct actions. Generated from core/tabs/*/tab_data.toml.</p>
     {SEARCH}
     <div class="tabs" role="tablist" aria-label="Linutil tabs">
@@ -510,7 +527,7 @@ def fullpage(tabs, trees, recs):
     parts = [head('Linutil full structure', mm.CSS_BASE + CSS_TREE, True), f"""
     <div class="topbar"><div>
     <p class="eyebrow">Menu map · Tree</p>
-    <h1>Linutil full structure</h1></div>{TOP_ACTIONS}</div>
+    <h1>Linutil full structure</h1></div>{top_actions(*MAP_LINKS)}</div>
     <p class="lede">All {total} entries across {len(tabs)} tabs, with script paths, task flags and restrictions. Generated from core/tabs/*/tab_data.toml.</p>
     {SEARCH}
     {howto()}"""]
@@ -518,6 +535,74 @@ def fullpage(tabs, trees, recs):
         parts.append(f'<div class="fulltab" id="{t["dir"]}">{trees[t["dir"]]}</div>')
     parts.append(f'  </div>\n  {data_script(recs)}\n  <script>{JS}</script>\n</body>\n</html>\n')
     return '\n'.join(parts)
+
+
+HOME_CSS = """
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+h1 { margin-bottom: 0; }
+.lede { font-size: 1.08rem; line-height: 1.55; margin-top: 1.25rem; }
+.lede a { color: var(--color-ink); text-underline-offset: 0.15em; }
+.themebtn { font: 500 0.78rem var(--font-sans); border: 1px solid var(--color-rule);
+  background: none; border-radius: 6px; padding: 0.4rem 0.75rem; color: var(--color-ink);
+  cursor: pointer; white-space: nowrap; }
+.themebtn:hover, .themebtn[aria-pressed="true"] { background: var(--color-paper-2); }
+.themebtn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.homegrid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; max-width: 40rem; margin-top: 2rem; }
+.homebtn { display: flex; align-items: center; justify-content: center; text-align: center;
+  min-height: 5.5rem; padding: 1.1rem 1.25rem; border: 1px solid var(--color-ink); border-radius: 10px;
+  background: var(--color-node); color: var(--color-ink); text-decoration: none;
+  font: 500 1.15rem var(--font-sans); }
+.homebtn:hover { background: var(--color-paper-2); }
+.homebtn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+"""
+
+HOME_JS = """
+(function () {
+  document.documentElement.classList.add('js');
+  var tb = document.getElementById('themebtn');
+  if (!tb) return;
+  var root = document.documentElement;
+  var cur = function () {
+    return root.getAttribute('data-theme') ||
+      (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  };
+  var paint = function () {
+    var d = cur() === 'dark';
+    tb.setAttribute('aria-pressed', d ? 'true' : 'false');
+    tb.textContent = d ? 'Dark mode: on' : 'Dark mode: off';
+  };
+  tb.addEventListener('click', function () {
+    var next = cur() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('linutil-map-theme', next); } catch (e) {}
+    paint();
+  });
+  paint();
+})();
+"""
+
+
+def home_page():
+    return (head('Menu maps', mm.CSS_BASE + HOME_CSS, True) + f"""
+    <div class="topbar">
+    <h1>Menu maps</h1>{THEME_BTN}</div>
+    <p class="lede">Two maps of installer menus, kept in this repository.
+    The Linutil map lists every tab, submenu, and action in
+    <a href="{LINUTIL_GH}" target="_blank" rel="noopener">Chris Titus Tech's Linutil</a>.
+    The Arch-Boki map lists every menu opened by the post-install gum script.
+    How each map is built is on the <a href="linutil-menu-map/index.html#about" target="_blank" rel="noopener">Linutil about page</a>
+    and the <a href="archboki-post-map/index.html#about" target="_blank" rel="noopener">Arch-Boki about page</a>.</p>
+    <div class="homegrid">
+      <a class="homebtn" href="linutil-menu-map/index.html" target="_blank" rel="noopener">Linutil map</a>
+      <a class="homebtn" href="archboki-post-map/index.html" target="_blank" rel="noopener">Arch-Boki map</a>
+      <a class="homebtn" href="{LINUTIL_GH}" target="_blank" rel="noopener">Linutil GitHub</a>
+      <a class="homebtn" href="{ARCH_GH}" target="_blank" rel="noopener">Arch-Boki GitHub</a>
+    </div>
+  </div>
+  <script>{HOME_JS}</script>
+</body>
+</html>
+""")
 
 
 def main():
@@ -544,9 +629,8 @@ def main():
         panels.append((slug, t['name'], str(t['total']), l, svg, plain[t['dir']], True))
     panels.append((DEFAULT_TAB, 'About', '', 'About this site and where it lives.', None,
                    about_html(), False))
-    # The tabbed map is the site home page at the repo root; other pages stay in OUT.
-    (mm.OUT.parent / 'index.html').write_text(wrapper(panels, recs2))
-    (mm.OUT / 'index.html').unlink(missing_ok=True)
+    (mm.OUT / 'index.html').write_text(wrapper(panels, recs2))
+    (mm.OUT.parent / 'index.html').write_text(home_page())
     (mm.OUT / 'linutil-full-structure.html').write_text(fullpage(tabs, trees, recs))
     print('entries indexed:', len(recs), len(recs2), 'expected', total)
 

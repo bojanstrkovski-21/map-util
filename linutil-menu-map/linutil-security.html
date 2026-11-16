@@ -41,15 +41,20 @@
 
 body { font-family: var(--font-sans); background: var(--color-paper); color: var(--color-ink);
   min-height: 100vh; padding: 3rem 2rem; }
-.frame { max-width: 1280px; width: 100%; margin: 0 auto; }
+.frame { max-width: 1440px; width: 100%; margin: 0 auto; }
 .eyebrow { font-family: var(--font-mono); font-size: 0.66rem; font-weight: 500;
   letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
 h1 { font-family: var(--font-serif); font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
   font-weight: 400; letter-spacing: -0.02em; line-height: 1.15; color: var(--color-ink);
   margin-bottom: 0.5rem; }
 .lede { font-size: 0.9rem; color: var(--color-muted); margin-bottom: 1.5rem; max-width: 64ch; }
-.diagram-container { width: 100%; overflow-x: auto; }
-svg { width: 100%; display: block; }
+.diagram-container { width: 100%; overflow-x: auto; display: flex; flex-direction: column; gap: 1.75rem; }
+svg { width: 100%; display: block; height: auto; }
+.glyph { width: 0.95rem; height: 0.95rem; flex: none; color: var(--color-ink); }
+.nm { display: flex; align-items: center; gap: 0.4rem; }
+.subtab { display: inline-flex; align-items: center; gap: 0.35rem; }
+h3.sub { display: flex; align-items: center; gap: 0.35rem; }
+h3.sub .glyph { width: 0.8rem; height: 0.8rem; }
 @media print { .diagram-container { overflow-x: visible; } svg { min-width: 0 !important; } }
 
 .tree, .howto, .search { margin-top: 2.5rem; max-width: 1100px; }
@@ -68,8 +73,9 @@ h3.sub { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transf
 .subtabs { display: none; flex-wrap: wrap; gap: 0.25rem; border-bottom: 1px solid var(--color-rule); margin: 1rem 0 0.75rem; }
 .js .subtabs { display: flex; }
 .js .tree.all .subtabs { display: none; }
-.subtab { font: 500 0.8rem var(--font-sans); color: var(--color-muted); background: none; border: 0;
-  border-bottom: 2px solid transparent; padding: 0.5rem 0.8rem; cursor: pointer; margin-bottom: -1px; }
+.subtab { display: inline-flex; align-items: center; gap: 0.35rem; font: 500 0.8rem var(--font-sans);
+  color: var(--color-muted); background: none; border: 0; border-bottom: 2px solid transparent;
+  padding: 0.5rem 0.8rem; cursor: pointer; margin-bottom: -1px; }
 .subtab .n { font-family: var(--font-mono); font-size: 0.66rem; color: var(--color-soft); margin-left: 0.4rem; }
 .subtab:hover { color: var(--color-ink); }
 .subtab[aria-selected="true"] { color: var(--color-ink); border-bottom-color: var(--color-ink); }
@@ -80,12 +86,14 @@ h3.sub { font: 500 0.66rem var(--font-mono); letter-spacing: 0.18em; text-transf
 .subpanel .subgroup .subpanel { background: var(--color-paper); margin: 0.5rem 0; }
 .subpanel > h3.sub { margin-top: 0.75rem; }
 .js .subpanel > h3.sub { display: none; }
-.js .tree.all .subpanel > h3.sub { display: block; }
+.js .tree.all .subpanel > h3.sub { display: flex; }
 .js .subpanel[hidden] { display: none; }
 .js .tree.all .subpanel[hidden] { display: block; }
 .panelnotes { margin: 0.5rem 0 0.25rem; }
 ul.rows { list-style: none; padding: 0; }
-.nm { font-weight: 600; font-size: 0.88rem; }
+.nm { display: flex; align-items: center; gap: 0.4rem; font-weight: 600; font-size: 0.88rem; }
+.glyph { width: 0.95rem; height: 0.95rem; flex: none; color: var(--color-ink); }
+h3.sub .glyph, .subtab .glyph { width: 0.8rem; height: 0.8rem; }
 .row { display: grid; grid-template-columns: minmax(170px, 1.2fr) minmax(200px, 1.6fr) 2fr; gap: 0.75rem;
   align-items: baseline; padding: 0.45rem 0.25rem; border-top: 1px solid var(--color-rule); }
 .row:first-child { border-top: 0; }
@@ -158,37 +166,41 @@ ul.rows { list-style: none; padding: 0; }
 <h2>Full structure</h2>
 <p class="note">Edit <code>core/tabs/security/tab_data.toml</code>. Scripts live under <code>core/tabs/security/</code>; paths below are relative to that folder. Chips are task flags (hover for the meaning) and restrictions.</p>
 <div class="toolbar"><button type="button" data-act="showall">Show all</button></div>
-<div class="subgroup"><div class="subtabs" role="tablist"><button type="button" class="subtab" role="tab" id="st-17" aria-controls="sp-17" aria-selected="true" tabindex="0">Direct actions<span class="n">4</span></button></div><div class="subpanel" role="tabpanel" id="sp-17" aria-labelledby="st-17"><h3 class="sub">Direct actions · 4</h3><ul class="rows"><li class="row" id="a-111"><span class="nm">FirewallD Firewall Baselines (CTT)</span><code>firewalld-baselines.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span><span class="chip alt" title="Entry is hidden unless this holds">requires: command_exists(firewall-cmd)</span></span></li><li class="row" id="a-112"><span class="nm">Lynis Security Audit</span><code>lynis-audit.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Package manager action">MP</span><span class="chip" title="Package removal">RP</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-113"><span class="nm">rkhunter Rootkit Scan</span><code>rkhunter-scan.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Package manager action">MP</span><span class="chip" title="Package removal">RP</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-114"><span class="nm">UFW Firewall Baselines (CTT)</span><code>ufw-baselines.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span><span class="chip alt" title="Entry is hidden unless this holds">requires: not command_exists(firewall-cmd)</span></span></li></ul></div></div>
+<div class="subgroup"><div class="subtabs" role="tablist"><button type="button" class="subtab" role="tab" id="st-17" aria-controls="sp-17" aria-selected="true" tabindex="0"><svg class="glyph" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6.5h6M5 9.5h6M5 12.5h3.5"/></svg>Direct actions<span class="n">4</span></button></div><div class="subpanel" role="tabpanel" id="sp-17" aria-labelledby="st-17"><h3 class="sub"><svg class="glyph" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6.5h6M5 9.5h6M5 12.5h3.5"/></svg>Direct actions · 4</h3><ul class="rows"><li class="row" id="a-111"><span class="nm"><svg class="glyph" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></svg>FirewallD Firewall Baselines (CTT)</span><code>firewalld-baselines.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span><span class="chip alt" title="Entry is hidden unless this holds">requires: command_exists(firewall-cmd)</span></span></li><li class="row" id="a-112"><span class="nm"><svg class="glyph" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></svg>Lynis Security Audit</span><code>lynis-audit.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Package manager action">MP</span><span class="chip" title="Package removal">RP</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-113"><span class="nm"><svg class="glyph" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></svg>rkhunter Rootkit Scan</span><code>rkhunter-scan.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Package manager action">MP</span><span class="chip" title="Package removal">RP</span><span class="chip alt" title="Cannot be queued with other commands">no multi-select</span></span></li><li class="row" id="a-114"><span class="nm"><svg class="glyph" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></svg>UFW Firewall Baselines (CTT)</span><code>ufw-baselines.sh</code><span class="chips"><span class="chip" title="Privileged installation">I</span><span class="chip" title="Service or systemd action">SS</span><span class="chip alt" title="Entry is hidden unless this holds">requires: not command_exists(firewall-cmd)</span></span></li></ul></div></div>
 </section>
 <h2 class="diagramh">Diagram</h2>
 <div class="diagram-container">
-<svg viewBox="0 0 632 412" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="linutil-security-title linutil-security-desc" style="min-width:632px;max-width:632px">
+<svg viewBox="0 0 560 318" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="linutil-security-title linutil-security-desc" style="width:100%;max-width:560px;min-width:520px;height:auto">
 <title id="linutil-security-title">Linutil menu: Security</title>
 <desc id="linutil-security-desc">Tree of the Security tab in Linutil, 4 entries across 4 direct actions.</desc>
 <rect width="100%" height="100%" fill="var(--color-paper)"/>
-<rect x="272" y="40" width="320" height="284" rx="8" fill="var(--color-zone)" stroke="var(--color-rule)" stroke-width="1"/>
-<text x="288" y="60" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">DIRECT ACTIONS · 4</text>
-<path d="M 208 68 H 272" fill="none" stroke="var(--color-muted)" stroke-width="1"/>
-<rect x="40" y="40" width="168" height="56" rx="6" fill="var(--color-paper)"/>
-<rect x="40" y="40" width="168" height="56" rx="6" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
-<rect x="48" y="48" width="28" height="12" rx="2" fill="transparent" stroke="var(--color-chip-accent)" stroke-width="0.8"/>
-<text x="62" y="57" fill="var(--color-accent)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">TAB</text>
-<text x="124" y="80" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Security</text>
-<text x="124" y="92" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">4 entries</text>
-<rect x="288" y="80" width="288" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
-<text x="432" y="108" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">FirewallD Firewall Baselines (CTT)</text>
-<rect x="288" y="140" width="288" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
-<text x="432" y="168" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Lynis Security Audit</text>
-<rect x="288" y="200" width="288" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
-<text x="432" y="228" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">rkhunter Rootkit Scan</text>
-<rect x="288" y="260" width="288" height="48" rx="6" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
-<text x="432" y="288" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">UFW Firewall Baselines (CTT)</text>
-<line x1="40" y1="352" x2="592" y2="352" stroke="var(--color-rule)" stroke-width="0.8"/>
-<text x="40" y="368" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">LEGEND</text>
-<rect x="40" y="380" width="14" height="10" rx="2" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
-<text x="60" y="388" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Tab</text>
-<rect x="103" y="380" width="14" height="10" rx="2" fill="var(--color-leaf)" stroke="var(--color-muted)" stroke-width="0.8"/>
-<text x="123" y="388" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Direct action</text>
+<rect x="62" y="40" width="248" height="72" rx="6" fill="var(--color-paper)"/>
+<rect x="62" y="40" width="248" height="72" rx="6" fill="var(--color-tint)" stroke="var(--color-accent)" stroke-width="1"/>
+<text x="186" y="96" fill="var(--color-ink)" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Security</text>
+<text x="186" y="108" fill="var(--color-soft)" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">4 actions</text>
+<g transform="translate(70 48)" fill="none" stroke="var(--color-accent)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6.5h6M5 9.5h6M5 12.5h3.5"/></g>
+<line x1="56" y1="112" x2="56" y2="212" stroke="var(--color-rail)" stroke-width="0.8"/>
+<line x1="56" y1="134" x2="68" y2="134" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 123)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></g>
+<text x="88" y="137" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">FirewallD Firewall Baselines (CTT)</text>
+<line x1="56" y1="160" x2="68" y2="160" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 149)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></g>
+<text x="88" y="163" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">Lynis Security Audit</text>
+<line x1="56" y1="186" x2="68" y2="186" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 175)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></g>
+<text x="88" y="189" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">rkhunter Rootkit Scan</text>
+<line x1="56" y1="212" x2="68" y2="212" stroke="var(--color-rail)" stroke-width="0.8"/>
+<g transform="translate(70 201)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></g>
+<text x="88" y="215" fill="var(--color-ink)" font-size="11" font-family="'Geist', sans-serif" text-anchor="start">UFW Firewall Baselines (CTT)</text>
+<line x1="40" y1="240" x2="520" y2="240" stroke="var(--color-rule)" stroke-width="0.8"/>
+<text x="40" y="256" fill="var(--color-muted)" font-size="8" font-family="'Geist Mono', monospace" text-anchor="start" letter-spacing="0.18em">LEGEND</text>
+<g transform="translate(40 265)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6.5h6M5 9.5h6M5 12.5h3.5"/></g>
+<text x="62" y="277" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Menu</text>
+<g transform="translate(108 265)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.6 5.2h4.4l1.5 1.6h7v6.8h-12.9z"/></g>
+<text x="130" y="277" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Submenu</text>
+<g transform="translate(192 265)" fill="none" stroke="var(--color-ink)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2.5" width="12" height="11" rx="2"/><path d="M5 7.1 7.3 9.2 5 11.3M8.7 11.3h2.8"/></g>
+<text x="214" y="277" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start">Action</text>
+<text x="40" y="296" fill="var(--color-muted)" font-size="8.5" font-family="'Geist', sans-serif" text-anchor="start" font-style="italic">A folder opens another menu. A shell mark is one action. Blocks past four are split near half.</text>
 </svg>
 </div>
   </div>
